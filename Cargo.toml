@@ -1,0 +1,7 @@
+[package]
+name = "DECALS-ControlPanel"
+version = "0.1.0"
+authors = ["Francesco Macagno <fjmacagno1@yahoo.com>", "Carly Robison <crobison@gmail.com>"]
+
+[dependencies]
+DECALS-base = {git = "https://github.com/EnterpriseComputingSystems/DECALS-base"}

@@ -1,0 +1,14 @@
+[[package]]
+name = "DECALS-ControlPanel"
+version = "0.1.0"
+dependencies = [
+ "DECALS-base 0.1.0 (git+https://github.com/EnterpriseComputingSystems/DECALS-base)",
+]
+
+[[package]]
+name = "DECALS-base"
+version = "0.1.0"
+source = "git+https://github.com/EnterpriseComputingSystems/DECALS-base#c5a4312e2bcfe9beeb8851b032fd2c27771ca17a"
+
+[metadata]
+"checksum DECALS-base 0.1.0 (git+https://github.com/EnterpriseComputingSystems/DECALS-base)" = "<none>"
