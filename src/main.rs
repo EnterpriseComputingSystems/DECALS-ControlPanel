@@ -1,12 +1,15 @@
 
 extern crate DECALS_base;
-use DECALS_base::Network;
+use DECALS_base::{Network};
 
 
 fn main() {
 
-    let net: Network = Network::new();
+    let mut interests: Vec<String> = Vec::new();
+    interests.push("SysStatus".to_string());
 
-    println!("{} . {}", net.get_num_devices(), net.connected);
+    let net: Network = Network::new(interests);
+
+    println!("{}", net.get_num_devices());
 
 }
