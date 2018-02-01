@@ -13,6 +13,10 @@ use piston::input::*;
 use glutin_window::GlutinWindow as Window;
 use opengl_graphics::{ GlGraphics, OpenGL };
 
+
+use std::sync::{RwLock, Arc};
+use std::borrow::Borrow;
+
 pub struct App {
     gl: GlGraphics, // OpenGL drawing backend.
     rotation: f64   // Rotation for the square.
@@ -64,9 +68,13 @@ fn main() {
     let mut interests: Vec<String> = Vec::new();
     interests.push("SysStatus".to_string());
 
-    let net: Network = Network::new(interests);
+    let net: Arc<RwLock<Network>> = Network::new(interests);
 
-    println!("{}", net.get_num_devices());
+    {
+        let lcktmp: &RwLock<Network> = net.borrow();
+        let guard = lcktmp.read().unwrap();
+        println!("attached {}", (*guard).get_num_devices());
+    }
 
     let mut app = App {
         gl: GlGraphics::new(opengl),
