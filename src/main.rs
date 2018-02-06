@@ -2,27 +2,53 @@
 extern crate DECALS_base;
 use DECALS_base::{Network};
 
-extern crate piston;
-extern crate graphics;
-extern crate glutin_window;
-extern crate opengl_graphics;
+// extern crate piston;
+// extern crate graphics;
+// extern crate glutin_window;
+// extern crate opengl_graphics;
+#[macro_use] extern crate conrod;
+extern crate piston_window;
 
-use piston::window::WindowSettings;
-use piston::event_loop::*;
-use piston::input::*;
-use glutin_window::GlutinWindow as Window;
-use opengl_graphics::{ GlGraphics, OpenGL };
-
+//use piston::event_loop::*;
+//use piston::input::*;
+//use glutin_window::GlutinWindow as Window;
+//use opengl_graphics::{ GlGraphics, OpenGL };
 
 use std::sync::{RwLock, Arc};
 use std::borrow::Borrow;
 
-pub struct App {
-    gl: GlGraphics, // OpenGL drawing backend.
-    rotation: f64   // Rotation for the square.
+mod panel {
+    use conrod;
+
+    use piston_window::{PistonWindow, UpdateEvent, Window, WindowSettings};
+    use piston_window::OpenGL;
+
+    pub fn main() {
+        const WIDTH: u32 = 400;
+        const HEIGHT: u32 = 400;
+        //gl: GlGraphics; // OpenGL drawing backend.
+        //rotation: f64;   // Rotation for the square.
+
+
+        let mut window: PistonWindow = WindowSettings::new("Starfleet Engineer - Left", [WIDTH, HEIGHT])
+            .opengl(OpenGL::V3_2)
+            .samples(4) // what is this
+            .exit_on_esc(true)
+            .vsync(true) // what is this
+            .build()
+            .unwrap();
+
+        let mut ui = conrod::UiBuilder::new([WIDTH as f64, HEIGHT as f64])
+            //.theme(support::theme())
+            .build();
+
+        while let Some(event) = window.next() {
+            
+        }
+    }
 }
 
-impl App {
+/*
     fn render(&mut self, args: &RenderArgs) {
         use graphics::*;
 
@@ -92,3 +118,10 @@ fn main() {
         }
     }
 }
+
+*/
+
+fn main() {
+    panel::main();
+}
+
