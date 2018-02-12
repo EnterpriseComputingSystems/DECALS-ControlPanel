@@ -25,8 +25,11 @@ impl App {
     fn render(&mut self, args: &RenderArgs) {
         use graphics::*;
 
-        const GREEN: [f32; 4] = [0.0, 1.0, 0.0, 1.0];
-        const RED:   [f32; 4] = [1.0, 0.0, 0.0, 1.0];
+        // Colors
+        const GREEN: [f32; 4] = [0.0, 0.8, 0.0, 1.0];
+        const RED:   [f32; 4] = [0.8, 0.0, 0.0, 1.0];
+        const SPACEBLUE: [f32; 4] = [0.2, 0.2, 0.8, 1.0];
+        const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
 
         let square = rectangle::square(0.0, 0.0, 50.0);
         let rotation = self.rotation;
@@ -35,14 +38,17 @@ impl App {
 
         self.gl.draw(args.viewport(), |c, gl| {
             // Clear the screen.
-            clear(GREEN, gl);
+            clear(SPACEBLUE, gl);
 
-            let transform = c.transform.trans(x, y)
-                                       .rot_rad(rotation)
-                                       .trans(-25.0, -25.0);
+            //let transform = c.transform.trans(x, y)
+            //                           .rot_rad(rotation)
+            //                           .trans(-25.0, -25.0);
 
             // Draw a box rotating around the middle of the screen.
-            rectangle(RED, square, transform, gl);
+            //rectangle(RED, square, transform, gl);
+
+            // Draw a console box at the bottom of the screen.
+            rectangle(BLACK, rectangle::square(0.0, 0.0, 50.0), c.transform.trans((args.width / 2) as f64, (args.height - 50) as f64), gl);
         });
     }
 
@@ -56,8 +62,8 @@ fn main() {
 	let opengl = OpenGL::V3_2;
 
 	let mut window: Window = WindowSettings::new(
-            "Hi There",
-            [200, 200]
+            "Starfleet Medical",
+            [800, 600]
         )
         .opengl(opengl)
         .exit_on_esc(true)
