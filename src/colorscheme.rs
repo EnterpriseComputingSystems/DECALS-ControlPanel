@@ -6,7 +6,7 @@ use rand;
 
 
 pub trait ColorScheme {
-    fn get_next_color(&self)->Color;
+    fn get_next_color(&mut self)->Color;
     fn get_num_color(&self, num: usize)->Color;
 }
 
@@ -24,8 +24,8 @@ impl RandScheme {
 }
 
 impl ColorScheme for RandScheme {
-    fn get_next_color(&self)->Color {
-        self.get_num_color(rand::random::<usize>() % self.pallette.len())
+    fn get_next_color(&mut self)->Color {
+        return self.get_num_color(rand::random::<usize>() % self.pallette.len())
     }
 
     fn get_num_color(&self, num: usize)->Color {
@@ -40,11 +40,30 @@ pub struct WeightedRandScheme {
     pallette: Pallette
 }
 
+//~~~~~~~~~~~~~~Iterated~~~~~~~~~~~~~~~~~~~~~~
+
 pub struct IteratedScheme {
-    idx: u8,
+    idx: usize,
     pallette: Pallette
 }
 
-pub struct GraphScheme {
+impl IteratedScheme {
+    pub fn new(pallette: Pallette)->IteratedScheme {
+        return IteratedScheme{idx: pallette.len() + 1, pallette};
+    }
+}
+
+impl ColorScheme for IteratedScheme {
+    fn get_next_color(&mut self)->Color {
+        self.idx = (self.idx + 1) % self.pallette.len();
+        return self.get_num_color(self.idx);
+    }
+
+    fn get_num_color(&self, num: usize)->Color {
+        return self.pallette[num];
+    }
+}
+
+pub struct SimilarityScheme {
 
 }
