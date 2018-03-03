@@ -6,6 +6,7 @@ extern crate piston;
 extern crate graphics;
 extern crate glutin_window;
 extern crate opengl_graphics;
+extern crate rand;
 
 use piston::window::WindowSettings;
 use piston::event_loop::*;
@@ -13,8 +14,17 @@ use piston::input::*;
 use glutin_window::GlutinWindow as Window;
 use opengl_graphics::{ GlGraphics, OpenGL };
 
+mod colorscheme;
+mod colors;
+
+use colors::{Color, Pallette};
+use colorscheme::ColorScheme;
+
 
 use std::sync::{Arc};
+
+
+
 
 pub struct App {
     gl: GlGraphics, // OpenGL drawing backend.
@@ -26,10 +36,7 @@ impl App {
         use graphics::*;
 
         // Colors
-        const GREEN: [f32; 4] = [0.0, 0.8, 0.0, 1.0];
-        const RED:   [f32; 4] = [0.8, 0.0, 0.0, 1.0];
-        const SPACEBLUE: [f32; 4] = [0.2, 0.2, 0.8, 1.0];
-        const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
+
 
         let square = rectangle::square(0.0, 0.0, 50.0);
         let rotation = self.rotation;
@@ -38,7 +45,7 @@ impl App {
 
         self.gl.draw(args.viewport(), |c, gl| {
             // Clear the screen.
-            clear(SPACEBLUE, gl);
+            clear(colors::SPACEBLUE, gl);
 
             //let transform = c.transform.trans(x, y)
             //                           .rot_rad(rotation)
@@ -48,7 +55,7 @@ impl App {
             //rectangle(RED, square, transform, gl);
 
             // Draw a console box at the bottom of the screen.
-            rectangle(BLACK, rectangle::square(0.0, 0.0, 50.0), c.transform.trans((args.width / 2) as f64, (args.height - 50) as f64), gl);
+            rectangle(colors::BLACK, rectangle::square(0.0, 0.0, 50.0), c.transform.trans((args.width / 2) as f64, (args.height - 50) as f64), gl);
         });
     }
 
