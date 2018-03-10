@@ -28,7 +28,8 @@ use std::sync::{Arc};
 
 pub struct App {
     gl: GlGraphics, // OpenGL drawing backend.
-    rotation: f64   // Rotation for the square.
+    rotation: f64,   // Rotation for the square.
+    alert: bool
 }
 
 impl App {
@@ -43,7 +44,11 @@ impl App {
         let (x, y) = ((args.width / 2) as f64,
                       (args.height / 2) as f64);
 
-        self.gl.draw(args.viewport(), |c, gl| {
+        let alert = self.alert;
+
+
+        self.gl.draw(args.viewport(), move |c, gl| {
+
             // Clear the screen.
             clear(colors::SPACEBLUE, gl);
 
@@ -55,7 +60,11 @@ impl App {
             //rectangle(RED, square, transform, gl);
 
             // Draw a console box at the bottom of the screen.
-            rectangle(colors::BLACK, rectangle::square(0.0, 0.0, 50.0), c.transform.trans((args.width / 2) as f64, (args.height - 50) as f64), gl);
+            if alert {
+                rectangle(colors::RED, rectangle::square(0.0, 0.0, 50.0), c.transform.trans((args.width / 2) as f64, (args.height - 50) as f64), gl);
+            } else {
+                rectangle(colors::BLACK, rectangle::square(0.0, 0.0, 50.0), c.transform.trans((args.width / 2) as f64, (args.height - 50) as f64), gl);
+            }
         });
     }
 
@@ -86,7 +95,8 @@ fn main() {
 
     let mut app = App {
         gl: GlGraphics::new(opengl),
-        rotation: 0.0
+        rotation: 0.0,
+        alert: false
     };
 
     let mut events = Events::new(EventSettings::new());
@@ -97,6 +107,11 @@ fn main() {
 
         if let Some(u) = e.update_args() {
             app.update(&u);
+        }
+
+        if let Some(Button::Keyboard(Key::A)) = e.press_args() {
+            println!("ALERT");
+            app.alert = !app.alert;
         }
     }
 }
