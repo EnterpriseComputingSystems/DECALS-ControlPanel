@@ -52,12 +52,12 @@ impl App {
             // Clear the screen.
             clear(colors::SPACEBLUE, gl);
 
-            //let transform = c.transform.trans(x, y)
-            //                           .rot_rad(rotation)
-            //                           .trans(-25.0, -25.0);
+            let transform = c.transform.trans(x, y)
+                                      .rot_rad(rotation)
+                                      .trans(-25.0, -25.0);
 
             // Draw a box rotating around the middle of the screen.
-            //rectangle(RED, square, transform, gl);
+            rectangle(colors::RED, square, transform, gl);
 
             // Draw a console box at the bottom of the screen.
             if alert {
