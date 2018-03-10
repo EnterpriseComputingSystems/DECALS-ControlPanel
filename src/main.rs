@@ -107,11 +107,19 @@ fn main() {
 
         if let Some(u) = e.update_args() {
             app.update(&u);
+
+            app.alert = net.get_data_value(&"ALERT_STATUS".to_string()) == "RED";
         }
 
         if let Some(Button::Keyboard(Key::A)) = e.press_args() {
             println!("ALERT");
             app.alert = !app.alert;
+
+            if app.alert {
+                Network::change_data_value(&net, "ALERT_STATUS".to_string(), "RED".to_string());
+            } else {
+                Network::change_data_value(&net, "ALERT_STATUS".to_string(), "NONE".to_string());
+            }
         }
     }
 }
