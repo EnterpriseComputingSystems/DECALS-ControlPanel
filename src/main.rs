@@ -1,125 +1,166 @@
+//! An example demonstrating all widgets in a long, vertically scrollable window.
 
+#[macro_use] extern crate conrod;
 extern crate DECALS_base;
-use DECALS_base::{Network};
-
-extern crate piston;
-extern crate graphics;
-extern crate glutin_window;
-extern crate opengl_graphics;
-extern crate rand;
-
-use piston::window::WindowSettings;
-use piston::event_loop::*;
-use piston::input::*;
-use glutin_window::GlutinWindow as Window;
-use opengl_graphics::{ GlGraphics, OpenGL };
-
-mod colorscheme;
-mod colors;
-
-use colors::{Color, Pallette};
-use colorscheme::ColorScheme;
-
-
-use std::sync::{Arc};
+mod support;
+mod interface;
 
 
 
 
-pub struct App {
-    gl: GlGraphics, // OpenGL drawing backend.
-    rotation: f64,   // Rotation for the square.
-    alert: bool
-}
 
-impl App {
-    fn render(&mut self, args: &RenderArgs) {
-        use graphics::*;
-
-        // Colors
-
-
-        let square = rectangle::square(0.0, 0.0, 50.0);
-        let rotation = self.rotation;
-        let (x, y) = ((args.width / 2) as f64,
-                      (args.height / 2) as f64);
-
-        let alert = self.alert;
-
-
-        self.gl.draw(args.viewport(), move |c, gl| {
-
-            // Clear the screen.
-            clear(colors::SPACEBLUE, gl);
-
-            let transform = c.transform.trans(x, y)
-                                      .rot_rad(rotation)
-                                      .trans(-25.0, -25.0);
-
-            // Draw a box rotating around the middle of the screen.
-            rectangle(colors::RED, square, transform, gl);
-
-            // Draw a console box at the bottom of the screen.
-            if alert {
-                rectangle(colors::RED, rectangle::square(0.0, 0.0, 50.0), c.transform.trans((args.width / 2) as f64, (args.height - 50) as f64), gl);
-            } else {
-                rectangle(colors::BLACK, rectangle::square(0.0, 0.0, 50.0), c.transform.trans((args.width / 2) as f64, (args.height - 50) as f64), gl);
-            }
-        });
-    }
-
-    fn update(&mut self, args: &UpdateArgs) {
-        // Rotate 2 radians per second.
-        self.rotation += 2.0 * args.dt;
-    }
-}
 
 fn main() {
-	let opengl = OpenGL::V3_2;
+    feature::main();
+}
 
-	let mut window: Window = WindowSettings::new(
-            "Starfleet Medical",
-            [800, 600]
-        )
-        .opengl(opengl)
-        .exit_on_esc(true)
-        .build()
-        .unwrap();
+mod feature {
+    extern crate find_folder;
+    extern crate piston_window;
+    use conrod;
+    use support;
 
-    let mut interests: Vec<String> = Vec::new();
-    interests.push("SysStatus".to_string());
+    use std::time;
 
-    let net: Arc<Network> = Network::new(interests);
+    pub const WIDTH: u32 = 1920;
+    pub const HEIGHT: u32 = 1080;
 
-    println!("attached {}", net.get_num_devices());
+    use self::piston_window::{PistonWindow, UpdateEvent, Window, WindowSettings};
+    use self::piston_window::{Flip, G2d, G2dTexture, Texture, TextureSettings};
+    use self::piston_window::OpenGL;
+    use self::piston_window::texture::UpdateTexture;
 
-    let mut app = App {
-        gl: GlGraphics::new(opengl),
-        rotation: 0.0,
-        alert: false
-    };
 
-    let mut events = Events::new(EventSettings::new());
-    while let Some(e) = events.next(&mut window) {
-        if let Some(r) = e.render_args() {
-            app.render(&r);
-        }
+    pub fn main() {
 
-        if let Some(u) = e.update_args() {
-            app.update(&u);
+        // Construct the window.
+        let mut window: PistonWindow =
+            WindowSettings::new("DECALS", [WIDTH, HEIGHT])
+                .opengl(OpenGL::V3_2) // If not working, try `OpenGL::V2_1`.
+                .samples(4)
+                .exit_on_esc(true)
+                .vsync(true)
+                .build()
+                .unwrap();
 
-            app.alert = net.get_data_value(&"ALERT_STATUS".to_string()) == "RED";
-        }
+        // construct our `Ui`.
+        let mut ui = conrod::UiBuilder::new([WIDTH as f64, HEIGHT as f64])
+            .theme(theme())
+            .build();
 
-        if let Some(Button::Keyboard(Key::A)) = e.press_args() {
-            println!("ALERT");
-            app.alert = !app.alert;
+        // Add a `Font` to the `Ui`'s `font::Map` from file.
+        let assets = find_folder::Search::KidsThenParents(3, 5).for_folder("assets").unwrap();
+        let font_path = assets.join("fonts/LCARSGTJ3.ttf");
+        ui.fonts.insert_from_file(font_path).unwrap();
 
-            if app.alert {
-                Network::change_data_value(&net, "ALERT_STATUS".to_string(), "RED".to_string());
-            } else {
-                Network::change_data_value(&net, "ALERT_STATUS".to_string(), "NONE".to_string());
+        // Create a texture to use for efficiently caching text on the GPU.
+        let mut text_vertex_data = Vec::new();
+        let (mut glyph_cache, mut text_texture_cache) = {
+            const SCALE_TOLERANCE: f32 = 0.1;
+            const POSITION_TOLERANCE: f32 = 0.1;
+            let cache = conrod::text::GlyphCache::new(WIDTH, HEIGHT, SCALE_TOLERANCE, POSITION_TOLERANCE);
+            let buffer_len = WIDTH as usize * HEIGHT as usize;
+            let init = vec![128; buffer_len];
+            let settings = TextureSettings::new();
+            let factory = &mut window.factory;
+            let texture = G2dTexture::from_memory_alpha(factory, &init, WIDTH, HEIGHT, &settings).unwrap();
+            (cache, texture)
+        };
+
+        // Instantiate the generated list of widget identifiers.
+        let ids = support::Ids::new(ui.widget_id_generator());
+
+        // Load the rust logo from file to a piston_window texture.
+        let rust_logo: G2dTexture = {
+            let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
+            let path = assets.join("images/sfclogo.gif");
+            let factory = &mut window.factory;
+            let settings = TextureSettings::new();
+            Texture::from_path(factory, &path, Flip::None, &settings).unwrap()
+        };
+
+        // Create our `conrod::image::Map` which describes each of our widget->image mappings.
+        // In our case we only have one image, however the macro may be used to list multiple.
+        let mut image_map = conrod::image::Map::new();
+        let rust_logo = image_map.insert(rust_logo);
+
+        // A demonstration of some state that we'd like to control with the App.
+        let mut app = support::DemoApp::new(rust_logo);
+
+        // Poll events from the window.
+        while let Some(event) = window.next() {
+
+            // Convert the piston event to a conrod event.
+            let size = window.size();
+            let (win_w, win_h) = (size.width as conrod::Scalar, size.height as conrod::Scalar);
+            if let Some(e) = conrod::backend::piston::event::convert(event.clone(), win_w, win_h) {
+                ui.handle_event(e);
             }
+
+            event.update(|_| {
+                let mut ui = ui.set_widgets();
+                support::gui(&mut ui, &ids, &mut app);
+            });
+
+            window.draw_2d(&event, |context, graphics| {
+                if let Some(primitives) = ui.draw_if_changed() {
+
+                    // A function used for caching glyphs to the texture cache.
+                    let cache_queued_glyphs = |graphics: &mut G2d,
+                                               cache: &mut G2dTexture,
+                                               rect: conrod::text::rt::Rect<u32>,
+                                               data: &[u8]|
+                    {
+                        let offset = [rect.min.x, rect.min.y];
+                        let size = [rect.width(), rect.height()];
+                        let format = piston_window::texture::Format::Rgba8;
+                        let encoder = &mut graphics.encoder;
+                        text_vertex_data.clear();
+                        text_vertex_data.extend(data.iter().flat_map(|&b| vec![255, 255, 255, b]));
+                        UpdateTexture::update(cache, encoder, format, &text_vertex_data[..], offset, size)
+                            .expect("failed to update texture")
+                    };
+
+                    // Specify how to get the drawable texture from the image. In this case, the image
+                    // *is* the texture.
+                    fn texture_from_image<T>(img: &T) -> &T { img }
+
+                    // Draw the conrod `render::Primitives`.
+                    conrod::backend::piston::draw::primitives(primitives,
+                                                              context,
+                                                              graphics,
+                                                              &mut text_texture_cache,
+                                                              &mut glyph_cache,
+                                                              &image_map,
+                                                              cache_queued_glyphs,
+                                                              texture_from_image);
+                }
+            });
+        }
+    }
+
+
+
+    /// A set of reasonable stylistic defaults that works for the `gui` below.
+    pub fn theme() -> conrod::Theme {
+        use conrod::position::{Align, Direction, Padding, Position, Relative};
+        conrod::Theme {
+            name: "Demo Theme".to_string(),
+            padding: Padding::none(),
+            x_position: Position::Relative(Relative::Align(Align::Start), None),
+            y_position: Position::Relative(Relative::Direction(Direction::Backwards, 20.0), None),
+            background_color: conrod::color::DARK_CHARCOAL,
+            shape_color: conrod::color::LIGHT_CHARCOAL,
+            border_color: conrod::color::BLACK,
+            border_width: 0.0,
+            label_color: conrod::color::WHITE,
+            font_id: None,
+            font_size_large: 26,
+            font_size_medium: 18,
+            font_size_small: 12,
+            widget_styling: conrod::theme::StyleMap::default(),
+            mouse_drag_threshold: 0.0,
+            double_click_threshold: time::Duration::from_millis(500),
         }
     }
 }
