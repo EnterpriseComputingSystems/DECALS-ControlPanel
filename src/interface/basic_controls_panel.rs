@@ -5,9 +5,13 @@ extern crate rand;
 use DECALS_base::support::alert::Alert;
 
 use conrod;
+use conrod::UiCell;
+use conrod::widget::id::Generator;
 
 widget_ids! {
     pub struct BasicControlsPanelIds {
+        canvas,
+
         logo,
 
         //Butons
@@ -20,7 +24,12 @@ widget_ids! {
         alert_2_3,
         alert_2_4,
 
+        alert_row_1,
+        alert_row_2,
+        alert_row_3,
+        alert_row_4,
 
+        alert_canvas,
 
         util_1_1,
         util_1_2,
@@ -46,10 +55,49 @@ widget_ids! {
 pub struct BasicControlsPanel {
     alert_status: Alert,
     logo: conrod::image::Id,
+    ids: BasicControlsPanelIds
 }
 
 impl BasicControlsPanel {
-    pub fn new(logo: conrod::image::Id)-> BasicControlsPanel {
-        BasicControlsPanel{alert_status: Alert::Normal, logo}
+    pub fn new(logo: conrod::image::Id, idgen: Generator)-> BasicControlsPanel {
+        BasicControlsPanel{alert_status: Alert::Normal, logo, ids: BasicControlsPanelIds::new(idgen)}
+    }
+
+
+    pub fn build(ui: &mut conrod::UiCell, bcp: &BasicControlsPanel) {
+        use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget};
+        use std::iter::once;
+
+        const MARGIN: conrod::Scalar = 30.0;
+        const UTIL_GAP: conrod::Scalar = 5.0;
+
+        const LOGO_SIZE: conrod::Scalar = 200.0;
+
+
+        widget::Canvas::new().pad(MARGIN).set(bcp.ids.canvas, ui);
+
+        widget::Image::new(bcp.logo)
+            .w_h(LOGO_SIZE, LOGO_SIZE)
+            .mid_top_of(bcp.ids.canvas)
+            .set(bcp.ids.logo, ui);
+
+        widget::Canvas::new()
+            .down(0.0)
+            .align_middle_x_of(bcp.ids.canvas)
+            .kid_area_w_of(bcp.ids.canvas)
+            .h(360.0)
+            .color(conrod::color::TRANSPARENT)
+            .pad(MARGIN)
+            .flow_down(&[
+                (bcp.ids.alert_row_1, widget::Canvas::new()),
+                (bcp.ids.alert_row_2, widget::Canvas::new()),
+                (bcp.ids.alert_row_3, widget::Canvas::new()),
+                (bcp.ids.alert_row_4, widget::Canvas::new())
+            ])
+            .set(bcp.ids.alert_canvas, ui);
+
+
+
+
     }
 }

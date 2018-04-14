@@ -20,6 +20,9 @@ mod feature {
     use conrod;
     use support;
 
+    use interface;
+    use interface::InterfaceState;
+
     use std::time;
 
     pub const WIDTH: u32 = 1920;
@@ -67,11 +70,8 @@ mod feature {
             (cache, texture)
         };
 
-        // Instantiate the generated list of widget identifiers.
-        let ids = support::Ids::new(ui.widget_id_generator());
-
         // Load the rust logo from file to a piston_window texture.
-        let rust_logo: G2dTexture = {
+        let logo: G2dTexture = {
             let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
             let path = assets.join("images/sfclogo.gif");
             let factory = &mut window.factory;
@@ -82,10 +82,9 @@ mod feature {
         // Create our `conrod::image::Map` which describes each of our widget->image mappings.
         // In our case we only have one image, however the macro may be used to list multiple.
         let mut image_map = conrod::image::Map::new();
-        let rust_logo = image_map.insert(rust_logo);
+        let logo = image_map.insert(logo);
 
-        // A demonstration of some state that we'd like to control with the App.
-        let mut app = support::DemoApp::new(rust_logo);
+        let mut decals_interface = InterfaceState::new(logo, ui.widget_id_generator());
 
         // Poll events from the window.
         while let Some(event) = window.next() {
@@ -99,7 +98,7 @@ mod feature {
 
             event.update(|_| {
                 let mut ui = ui.set_widgets();
-                support::gui(&mut ui, &ids, &mut app);
+                interface::build_interface(&mut ui, &decals_interface);
             });
 
             window.draw_2d(&event, |context, graphics| {
