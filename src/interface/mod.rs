@@ -37,5 +37,6 @@ impl InterfaceState {
 }
 
 pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
+    interface.alert_status = alert::get_alert_from_text(interface.network.get_data_value(&alert::ALERT_KEY.to_string()));
     basic_controls_panel::build(ui, interface);
 }

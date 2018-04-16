@@ -63,12 +63,11 @@ widget_ids! {
 pub struct BasicControlsPanel {
     logo: conrod::image::Id,
     ids: BasicControlsPanelIds,
-    alert_btn_scheme: Arc<ColorScheme>,
 }
 
 impl BasicControlsPanel {
     pub fn new(logo: conrod::image::Id, idgen: Generator)-> BasicControlsPanel {
-        BasicControlsPanel{logo, ids: BasicControlsPanelIds::new(idgen), alert_btn_scheme: Arc::new(IteratedScheme::new(colors::NO_ALERT.to_vec()))}
+        BasicControlsPanel{logo, ids: BasicControlsPanelIds::new(idgen)}
     }
 
 
@@ -96,6 +95,15 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Alert buttons
 
+    let mut alert_scheme: Arc<ColorScheme> = Arc::new(match state.alert_status {
+        Alert::Normal=> IteratedScheme::new(colors::NO_ALERT.to_vec()),
+        Alert::Yellow=> IteratedScheme::new(colors::NO_ALERT.to_vec()),
+        Alert::Blue=> IteratedScheme::new(colors::NO_ALERT.to_vec()),
+        Alert::Black=> IteratedScheme::new(colors::NO_ALERT.to_vec()),
+        Alert::Red=> IteratedScheme::new(colors::RED_ALERT.to_vec())
+
+    });
+
     widget::Canvas::new()
     .down(0.0)
     .align_middle_x_of(state.bcp_state.ids.canvas)
@@ -111,7 +119,8 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
         ])
         .set(state.bcp_state.ids.alert_canvas, ui);
 
-        for _press in widget::Button::new()
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label("test1")
         .mid_left_with_margin_on(state.bcp_state.ids.alert_row_1, BTN_GAP)
         .w_h(150.0, 70.0)
@@ -120,7 +129,8 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
 
         }
 
-        for _press in widget::Button::new()
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label(&alert::get_alert_text(Alert::Normal))
         .mid_right_with_margin_on(state.bcp_state.ids.alert_row_1, BTN_GAP)
         .w_h(150.0, 70.0)
@@ -129,7 +139,8 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
             state.set_alert_state(Alert::Normal);
         }
 
-        for _press in widget::Button::new()
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label("test2")
         .mid_left_with_margin_on(state.bcp_state.ids.alert_row_2, BTN_GAP)
         .w_h(150.0, 70.0)
@@ -138,16 +149,18 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
 
         }
 
-        for _press in widget::Button::new()
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label(&alert::get_alert_text(Alert::Blue))
         .mid_right_with_margin_on(state.bcp_state.ids.alert_row_2, BTN_GAP)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_2_2, ui)
         {
-
+            state.set_alert_state(Alert::Blue);
         }
 
-        for _press in widget::Button::new()
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label("test3")
         .mid_left_with_margin_on(state.bcp_state.ids.alert_row_3, BTN_GAP)
         .w_h(150.0, 70.0)
@@ -156,16 +169,18 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
 
         }
 
-        for _press in widget::Button::new()
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label(&alert::get_alert_text(Alert::Yellow))
         .mid_right_with_margin_on(state.bcp_state.ids.alert_row_3, BTN_GAP)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_2_3, ui)
         {
-
+            state.set_alert_state(Alert::Yellow);
         }
 
-        for _press in widget::Button::new()
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label("test4")
         .mid_left_with_margin_on(state.bcp_state.ids.alert_row_4, BTN_GAP)
         .w_h(150.0, 70.0)
@@ -174,7 +189,8 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
 
         }
 
-        for _press in widget::Button::new()
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label(&alert::get_alert_text(Alert::Red))
         .mid_right_with_margin_on(state.bcp_state.ids.alert_row_4, BTN_GAP)
         .w_h(150.0, 70.0)
