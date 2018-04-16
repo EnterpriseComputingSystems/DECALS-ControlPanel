@@ -2,11 +2,19 @@
 
 extern crate rand;
 
+use std::sync::Arc;
+
+use DECALS_base::support::alert;
 use DECALS_base::support::alert::Alert;
 
 use conrod;
-use conrod::UiCell;
 use conrod::widget::id::Generator;
+
+use super::InterfaceState;
+
+use super::super::color::{ColorScheme, IteratedScheme};
+use super::super::color::colors;
+use super::super::color::colors::{Color, Pallette};
 
 widget_ids! {
     pub struct BasicControlsPanelIds {
@@ -53,51 +61,127 @@ widget_ids! {
 }
 
 pub struct BasicControlsPanel {
-    alert_status: Alert,
     logo: conrod::image::Id,
-    ids: BasicControlsPanelIds
+    ids: BasicControlsPanelIds,
+    alert_btn_scheme: Arc<ColorScheme>,
 }
 
 impl BasicControlsPanel {
     pub fn new(logo: conrod::image::Id, idgen: Generator)-> BasicControlsPanel {
-        BasicControlsPanel{alert_status: Alert::Normal, logo, ids: BasicControlsPanelIds::new(idgen)}
+        BasicControlsPanel{logo, ids: BasicControlsPanelIds::new(idgen), alert_btn_scheme: Arc::new(IteratedScheme::new(colors::NO_ALERT.to_vec()))}
     }
 
 
-    pub fn build(ui: &mut conrod::UiCell, bcp: &BasicControlsPanel) {
-        use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget};
-        use std::iter::once;
-
-        const MARGIN: conrod::Scalar = 30.0;
-        const UTIL_GAP: conrod::Scalar = 5.0;
-
-        const LOGO_SIZE: conrod::Scalar = 200.0;
-
-
-        widget::Canvas::new().pad(MARGIN).set(bcp.ids.canvas, ui);
-
-        widget::Image::new(bcp.logo)
-            .w_h(LOGO_SIZE, LOGO_SIZE)
-            .mid_top_of(bcp.ids.canvas)
-            .set(bcp.ids.logo, ui);
-
-        widget::Canvas::new()
-            .down(0.0)
-            .align_middle_x_of(bcp.ids.canvas)
-            .kid_area_w_of(bcp.ids.canvas)
-            .h(360.0)
-            .color(conrod::color::TRANSPARENT)
-            .pad(MARGIN)
-            .flow_down(&[
-                (bcp.ids.alert_row_1, widget::Canvas::new()),
-                (bcp.ids.alert_row_2, widget::Canvas::new()),
-                (bcp.ids.alert_row_3, widget::Canvas::new()),
-                (bcp.ids.alert_row_4, widget::Canvas::new())
-            ])
-            .set(bcp.ids.alert_canvas, ui);
-
-
-
-
-    }
 }
+
+pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
+    use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget};
+    use std::iter::once;
+
+    const MARGIN: conrod::Scalar = 30.0;
+    const BTN_GAP: conrod::Scalar = 5.0;
+
+    const LOGO_SIZE: conrod::Scalar = 200.0;
+
+
+    widget::Canvas::new().pad(MARGIN).set(state.bcp_state.ids.canvas, ui);
+
+    widget::Image::new(state.bcp_state.logo)
+    .w_h(LOGO_SIZE, LOGO_SIZE)
+    .mid_top_of(state.bcp_state.ids.canvas)
+    .set(state.bcp_state.ids.logo, ui);
+
+
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Alert buttons
+
+    widget::Canvas::new()
+    .down(0.0)
+    .align_middle_x_of(state.bcp_state.ids.canvas)
+    .kid_area_w_of(state.bcp_state.ids.canvas)
+    .h(360.0)
+    .color(conrod::color::TRANSPARENT)
+    .pad(MARGIN)
+    .flow_down(&[
+        (state.bcp_state.ids.alert_row_1, widget::Canvas::new()),
+        (state.bcp_state.ids.alert_row_2, widget::Canvas::new()),
+        (state.bcp_state.ids.alert_row_3, widget::Canvas::new()),
+        (state.bcp_state.ids.alert_row_4, widget::Canvas::new())
+        ])
+        .set(state.bcp_state.ids.alert_canvas, ui);
+
+        for _press in widget::Button::new()
+        .label("test1")
+        .mid_left_with_margin_on(state.bcp_state.ids.alert_row_1, BTN_GAP)
+        .w_h(150.0, 70.0)
+        .set(state.bcp_state.ids.alert_1_1, ui)
+        {
+
+        }
+
+        for _press in widget::Button::new()
+        .label(&alert::get_alert_text(Alert::Normal))
+        .mid_right_with_margin_on(state.bcp_state.ids.alert_row_1, BTN_GAP)
+        .w_h(150.0, 70.0)
+        .set(state.bcp_state.ids.alert_2_1, ui)
+        {
+            state.set_alert_state(Alert::Normal);
+        }
+
+        for _press in widget::Button::new()
+        .label("test2")
+        .mid_left_with_margin_on(state.bcp_state.ids.alert_row_2, BTN_GAP)
+        .w_h(150.0, 70.0)
+        .set(state.bcp_state.ids.alert_1_2, ui)
+        {
+
+        }
+
+        for _press in widget::Button::new()
+        .label(&alert::get_alert_text(Alert::Blue))
+        .mid_right_with_margin_on(state.bcp_state.ids.alert_row_2, BTN_GAP)
+        .w_h(150.0, 70.0)
+        .set(state.bcp_state.ids.alert_2_2, ui)
+        {
+
+        }
+
+        for _press in widget::Button::new()
+        .label("test3")
+        .mid_left_with_margin_on(state.bcp_state.ids.alert_row_3, BTN_GAP)
+        .w_h(150.0, 70.0)
+        .set(state.bcp_state.ids.alert_1_3, ui)
+        {
+
+        }
+
+        for _press in widget::Button::new()
+        .label(&alert::get_alert_text(Alert::Yellow))
+        .mid_right_with_margin_on(state.bcp_state.ids.alert_row_3, BTN_GAP)
+        .w_h(150.0, 70.0)
+        .set(state.bcp_state.ids.alert_2_3, ui)
+        {
+
+        }
+
+        for _press in widget::Button::new()
+        .label("test4")
+        .mid_left_with_margin_on(state.bcp_state.ids.alert_row_4, BTN_GAP)
+        .w_h(150.0, 70.0)
+        .set(state.bcp_state.ids.alert_1_4, ui)
+        {
+
+        }
+
+        for _press in widget::Button::new()
+        .label(&alert::get_alert_text(Alert::Red))
+        .mid_right_with_margin_on(state.bcp_state.ids.alert_row_4, BTN_GAP)
+        .w_h(150.0, 70.0)
+        .set(state.bcp_state.ids.alert_2_4, ui)
+        {
+            state.set_alert_state(Alert::Red);
+        }
+
+
+    }

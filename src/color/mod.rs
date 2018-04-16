@@ -1,8 +1,9 @@
 
-
-use colors::{Color, Pallette};
+pub mod colors;
 
 use rand;
+
+use self::colors::{Color, Pallette};
 
 
 pub trait ColorScheme {

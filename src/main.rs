@@ -2,8 +2,9 @@
 
 #[macro_use] extern crate conrod;
 extern crate DECALS_base;
-mod support;
+extern crate rand;
 mod interface;
+mod color;
 
 
 
@@ -18,12 +19,14 @@ mod feature {
     extern crate find_folder;
     extern crate piston_window;
     use conrod;
-    use support;
 
     use interface;
     use interface::InterfaceState;
 
     use std::time;
+    use std::sync::{Arc};
+
+    use DECALS_base::Network;
 
     pub const WIDTH: u32 = 1920;
     pub const HEIGHT: u32 = 1080;
@@ -35,6 +38,11 @@ mod feature {
 
 
     pub fn main() {
+
+        let mut interests: Vec<String> = Vec::new();
+        interests.push("SysStatus".to_string());
+
+        let network: Arc<Network> = Network::new(interests);
 
         // Construct the window.
         let mut window: PistonWindow =
@@ -84,7 +92,7 @@ mod feature {
         let mut image_map = conrod::image::Map::new();
         let logo = image_map.insert(logo);
 
-        let mut decals_interface = InterfaceState::new(logo, ui.widget_id_generator());
+        let mut decals_interface = InterfaceState::new(logo, ui.widget_id_generator(), network.clone());
 
         // Poll events from the window.
         while let Some(event) = window.next() {
@@ -98,7 +106,7 @@ mod feature {
 
             event.update(|_| {
                 let mut ui = ui.set_widgets();
-                interface::build_interface(&mut ui, &decals_interface);
+                interface::build_interface(&mut ui, &mut decals_interface);
             });
 
             window.draw_2d(&event, |context, graphics| {
@@ -148,7 +156,7 @@ mod feature {
             padding: Padding::none(),
             x_position: Position::Relative(Relative::Align(Align::Start), None),
             y_position: Position::Relative(Relative::Direction(Direction::Backwards, 20.0), None),
-            background_color: conrod::color::DARK_CHARCOAL,
+            background_color: conrod::color::BLACK,
             shape_color: conrod::color::LIGHT_CHARCOAL,
             border_color: conrod::color::BLACK,
             border_width: 0.0,
