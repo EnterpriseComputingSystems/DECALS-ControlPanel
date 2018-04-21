@@ -97,9 +97,9 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
 
     let mut alert_scheme: Arc<ColorScheme> = Arc::new(match state.alert_status {
         Alert::Normal=> IteratedScheme::new(colors::NO_ALERT.to_vec()),
-        Alert::Yellow=> IteratedScheme::new(colors::NO_ALERT.to_vec()),
-        Alert::Blue=> IteratedScheme::new(colors::NO_ALERT.to_vec()),
-        Alert::Black=> IteratedScheme::new(colors::NO_ALERT.to_vec()),
+        Alert::Yellow=> IteratedScheme::new(colors::YELLOW_ALERT.to_vec()),
+        Alert::Blue=> IteratedScheme::new(colors::BLUE_ALERT.to_vec()),
+        Alert::Black=> IteratedScheme::new(colors::BLUE_ALERT.to_vec()),
         Alert::Red=> IteratedScheme::new(colors::RED_ALERT.to_vec())
 
     });
