@@ -54,7 +54,7 @@ impl InterfaceState {
 pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
     interface.alert_status = alert::get_alert_from_text(interface.network.get_data_value(&alert::ALERT_KEY.to_string()));
 
-    widget::Canvas::new().set(interface.root_ids.canvas, ui);
+    widget::Canvas::new().pad(10.0).set(interface.root_ids.canvas, ui);
 
     basic_controls_panel::build(ui, interface);
     vertical_menu::build(ui, interface);

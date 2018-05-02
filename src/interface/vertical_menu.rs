@@ -46,16 +46,14 @@ impl VerticalMenu {
 pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget};
 
-    const MARGIN: conrod::Scalar = 30.0;
+    const MARGIN: conrod::Scalar = 15.0;
     const BTN_GAP: conrod::Scalar = 2.0;
 
 
-    widget::Canvas::new().pad(MARGIN)
-        .color(colors::SPACEBLUE)
+    widget::Canvas::new().parent(state.root_ids.canvas)
         .w(200.0)
-        .kid_area_h_of(state.root_ids.canvas)
-        .align_middle_x_of(state.root_ids.canvas)
-        .right(0.0)
+        .right_from(state.bcp_state.ids.canvas, MARGIN)
+        // .right(0.0)
         .set(state.vm_state.ids.canvas, ui);
 
 
@@ -75,13 +73,74 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     for _press in widget::Button::new()
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label("test1")
-        .right_justify_label()
         .mid_top_of(state.vm_state.ids.canvas)
-        .w_h(150.0, 70.0)
-        .set(state.vm_state.ids.btn1, ui)
-        {
+        .w_h(200.0, 250.0)
+        .set(state.vm_state.ids.btn1, ui) {
 
-        }
+    }
+
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+        .label("test2")
+        .down(BTN_GAP)
+        .w_h(200.0, 70.0)
+        .set(state.vm_state.ids.btn2, ui) {
+
+    }
+
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+        .label("test3")
+        .down(BTN_GAP)
+        .w_h(200.0, 100.0)
+        .set(state.vm_state.ids.btn3, ui) {
+
+    }
+
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+        .label("test4")
+        .down(BTN_GAP)
+        .w_h(200.0, 120.0)
+        .set(state.vm_state.ids.btn4, ui) {
+
+    }
+
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+        .label("test5")
+        .down(BTN_GAP)
+        .w_h(200.0, 70.0)
+        .set(state.vm_state.ids.btn5, ui) {
+
+    }
+
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+        .label("test6")
+        .down(BTN_GAP)
+        .w_h(200.0, 90.0)
+        .set(state.vm_state.ids.btn6, ui) {
+
+    }
+
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+        .label("test7")
+        .down(BTN_GAP)
+        .w_h(200.0, 100.0)
+        .set(state.vm_state.ids.btn7, ui) {
+
+    }
+
+    for _press in widget::Button::new()
+        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+        .label("test8")
+        .down(BTN_GAP)
+        .w_h(200.0, 250.0)
+        .set(state.vm_state.ids.btn8, ui) {
+
+    }
 
 
 }

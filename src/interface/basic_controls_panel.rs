@@ -75,17 +75,16 @@ impl BasicControlsPanel {
 
 pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget};
-    use std::iter::once;
 
-    const MARGIN: conrod::Scalar = 30.0;
+    const MARGIN: conrod::Scalar = 15.0;
     const BTN_GAP: conrod::Scalar = 2.0;
 
     const LOGO_SIZE: conrod::Scalar = 200.0;
 
 
-    widget::Canvas::new().pad(MARGIN)
+    widget::Canvas::new()
         .color(conrod::color::TRANSPARENT)
-        .w(370.0)
+        .w(302.0)
         .kid_area_h_of(state.root_ids.canvas)
         .top_left_of(state.root_ids.canvas)
         .set(state.bcp_state.ids.canvas, ui);
