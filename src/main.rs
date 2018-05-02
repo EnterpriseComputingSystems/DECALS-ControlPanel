@@ -92,7 +92,7 @@ mod feature {
         let mut image_map = conrod::image::Map::new();
         let logo = image_map.insert(logo);
 
-        let mut decals_interface = InterfaceState::new(logo, ui.widget_id_generator(), network.clone());
+        let mut decals_interface = InterfaceState::new(logo, &mut ui, network.clone());
 
         // Poll events from the window.
         while let Some(event) = window.next() {

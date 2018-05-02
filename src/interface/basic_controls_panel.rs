@@ -62,7 +62,7 @@ widget_ids! {
 
 pub struct BasicControlsPanel {
     logo: conrod::image::Id,
-    ids: BasicControlsPanelIds,
+    pub ids: BasicControlsPanelIds,
 }
 
 impl BasicControlsPanel {
@@ -78,12 +78,17 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     use std::iter::once;
 
     const MARGIN: conrod::Scalar = 30.0;
-    const BTN_GAP: conrod::Scalar = 5.0;
+    const BTN_GAP: conrod::Scalar = 2.0;
 
     const LOGO_SIZE: conrod::Scalar = 200.0;
 
 
-    widget::Canvas::new().pad(MARGIN).set(state.bcp_state.ids.canvas, ui);
+    widget::Canvas::new().pad(MARGIN)
+        .color(conrod::color::TRANSPARENT)
+        .w(370.0)
+        .kid_area_h_of(state.root_ids.canvas)
+        .top_left_of(state.root_ids.canvas)
+        .set(state.bcp_state.ids.canvas, ui);
 
     widget::Image::new(state.bcp_state.logo)
     .w_h(LOGO_SIZE, LOGO_SIZE)
@@ -105,24 +110,24 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     });
 
     widget::Canvas::new()
-    .down(0.0)
+    .down(MARGIN)
     .align_middle_x_of(state.bcp_state.ids.canvas)
     .kid_area_w_of(state.bcp_state.ids.canvas)
-    .h(360.0)
+    .h(310.0)
     .color(conrod::color::TRANSPARENT)
-    .pad(MARGIN)
     .flow_down(&[
-        (state.bcp_state.ids.alert_row_1, widget::Canvas::new()),
-        (state.bcp_state.ids.alert_row_2, widget::Canvas::new()),
-        (state.bcp_state.ids.alert_row_3, widget::Canvas::new()),
-        (state.bcp_state.ids.alert_row_4, widget::Canvas::new())
+        (state.bcp_state.ids.alert_row_1, widget::Canvas::new().color(conrod::color::TRANSPARENT)),
+        (state.bcp_state.ids.alert_row_2, widget::Canvas::new().color(conrod::color::TRANSPARENT)),
+        (state.bcp_state.ids.alert_row_3, widget::Canvas::new().color(conrod::color::TRANSPARENT)),
+        (state.bcp_state.ids.alert_row_4, widget::Canvas::new().color(conrod::color::TRANSPARENT))
         ])
         .set(state.bcp_state.ids.alert_canvas, ui);
 
     for _press in widget::Button::new()
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label("test1")
-        .mid_left_with_margin_on(state.bcp_state.ids.alert_row_1, BTN_GAP)
+        .right_justify_label()
+        .mid_left_of(state.bcp_state.ids.alert_row_1)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_1_1, ui)
         {
@@ -132,7 +137,8 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     for _press in widget::Button::new()
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label(&alert::get_alert_text(Alert::Normal))
-        .mid_right_with_margin_on(state.bcp_state.ids.alert_row_1, BTN_GAP)
+        .right_justify_label()
+        .right(BTN_GAP)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_2_1, ui)
         {
@@ -142,7 +148,8 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     for _press in widget::Button::new()
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label("test2")
-        .mid_left_with_margin_on(state.bcp_state.ids.alert_row_2, BTN_GAP)
+        .right_justify_label()
+        .mid_left_of(state.bcp_state.ids.alert_row_2)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_1_2, ui)
         {
@@ -152,7 +159,8 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     for _press in widget::Button::new()
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label(&alert::get_alert_text(Alert::Blue))
-        .mid_right_with_margin_on(state.bcp_state.ids.alert_row_2, BTN_GAP)
+        .right_justify_label()
+        .right(BTN_GAP)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_2_2, ui)
         {
@@ -162,7 +170,8 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     for _press in widget::Button::new()
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label("test3")
-        .mid_left_with_margin_on(state.bcp_state.ids.alert_row_3, BTN_GAP)
+        .right_justify_label()
+        .mid_left_of(state.bcp_state.ids.alert_row_3)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_1_3, ui)
         {
@@ -172,7 +181,8 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     for _press in widget::Button::new()
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label(&alert::get_alert_text(Alert::Yellow))
-        .mid_right_with_margin_on(state.bcp_state.ids.alert_row_3, BTN_GAP)
+        .right_justify_label()
+        .right(BTN_GAP)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_2_3, ui)
         {
@@ -182,7 +192,8 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     for _press in widget::Button::new()
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label("test4")
-        .mid_left_with_margin_on(state.bcp_state.ids.alert_row_4, BTN_GAP)
+        .right_justify_label()
+        .mid_left_of(state.bcp_state.ids.alert_row_4)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_1_4, ui)
         {
@@ -192,7 +203,8 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     for _press in widget::Button::new()
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label(&alert::get_alert_text(Alert::Red))
-        .mid_right_with_margin_on(state.bcp_state.ids.alert_row_4, BTN_GAP)
+        .right_justify_label()
+        .right(BTN_GAP)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_2_4, ui)
         {
@@ -200,4 +212,4 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
         }
 
 
-    }
+}
