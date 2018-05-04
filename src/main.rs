@@ -1,10 +1,12 @@
 //! An example demonstrating all widgets in a long, vertically scrollable window.
 
 #[macro_use] extern crate conrod;
+#[macro_use] extern crate conrod_derive;
 extern crate DECALS_base;
 extern crate rand;
 mod interface;
 mod color;
+mod DECALS_widgets;
 
 
 

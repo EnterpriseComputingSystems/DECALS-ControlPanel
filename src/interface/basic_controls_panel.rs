@@ -75,9 +75,11 @@ impl BasicControlsPanel {
 
 pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget};
+    use super::super::DECALS_widgets::rounded_button::RoundedButton;
 
     const MARGIN: conrod::Scalar = 15.0;
     const BTN_GAP: conrod::Scalar = 2.0;
+    const BTN_RADIUS: conrod::Scalar = 25.0;
 
     const LOGO_SIZE: conrod::Scalar = 200.0;
 
@@ -122,10 +124,9 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
         ])
         .set(state.bcp_state.ids.alert_canvas, ui);
 
-    for _press in widget::Button::new()
+    for _press in RoundedButton::rounded_left(BTN_RADIUS)
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label("test1")
-        .right_justify_label()
         .mid_left_of(state.bcp_state.ids.alert_row_1)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_1_1, ui)
@@ -133,10 +134,9 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
 
         }
 
-    for _press in widget::Button::new()
+    for _press in RoundedButton::new()
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label(&alert::get_alert_text(Alert::Normal))
-        .right_justify_label()
         .right(BTN_GAP)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_2_1, ui)
@@ -144,10 +144,9 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
             state.set_alert_state(Alert::Normal);
         }
 
-    for _press in widget::Button::new()
+    for _press in RoundedButton::rounded_left(BTN_RADIUS)
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label("test2")
-        .right_justify_label()
         .mid_left_of(state.bcp_state.ids.alert_row_2)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_1_2, ui)
@@ -155,10 +154,9 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
 
         }
 
-    for _press in widget::Button::new()
+    for _press in RoundedButton::new()
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label(&alert::get_alert_text(Alert::Blue))
-        .right_justify_label()
         .right(BTN_GAP)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_2_2, ui)
@@ -166,10 +164,9 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
             state.set_alert_state(Alert::Blue);
         }
 
-    for _press in widget::Button::new()
+    for _press in RoundedButton::rounded_left(BTN_RADIUS)
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label("test3")
-        .right_justify_label()
         .mid_left_of(state.bcp_state.ids.alert_row_3)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_1_3, ui)
@@ -177,10 +174,9 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
 
         }
 
-    for _press in widget::Button::new()
+    for _press in RoundedButton::new()
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label(&alert::get_alert_text(Alert::Yellow))
-        .right_justify_label()
         .right(BTN_GAP)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_2_3, ui)
@@ -188,10 +184,9 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
             state.set_alert_state(Alert::Yellow);
         }
 
-    for _press in widget::Button::new()
+    for _press in RoundedButton::rounded_left(BTN_RADIUS)
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label("test4")
-        .right_justify_label()
         .mid_left_of(state.bcp_state.ids.alert_row_4)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_1_4, ui)
@@ -199,10 +194,9 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
 
         }
 
-    for _press in widget::Button::new()
+    for _press in RoundedButton::new()
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
         .label(&alert::get_alert_text(Alert::Red))
-        .right_justify_label()
         .right(BTN_GAP)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_2_4, ui)
