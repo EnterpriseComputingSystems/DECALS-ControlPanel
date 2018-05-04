@@ -126,7 +126,6 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
 
     for _press in RoundedButton::rounded_left(BTN_RADIUS)
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
-        .label("test1")
         .mid_left_of(state.bcp_state.ids.alert_row_1)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_1_1, ui)
@@ -146,7 +145,6 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
 
     for _press in RoundedButton::rounded_left(BTN_RADIUS)
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
-        .label("test2")
         .mid_left_of(state.bcp_state.ids.alert_row_2)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_1_2, ui)
@@ -166,7 +164,6 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
 
     for _press in RoundedButton::rounded_left(BTN_RADIUS)
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
-        .label("test3")
         .mid_left_of(state.bcp_state.ids.alert_row_3)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_1_3, ui)
@@ -186,7 +183,6 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
 
     for _press in RoundedButton::rounded_left(BTN_RADIUS)
         .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
-        .label("test4")
         .mid_left_of(state.bcp_state.ids.alert_row_4)
         .w_h(150.0, 70.0)
         .set(state.bcp_state.ids.alert_1_4, ui)

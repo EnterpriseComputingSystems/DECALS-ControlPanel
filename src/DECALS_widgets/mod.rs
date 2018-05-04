@@ -180,20 +180,34 @@ pub mod rounded_button {
                 .graphics_for(id)
                 .set(state.ids.polygon, ui);
 
-            // Now we'll instantiate our label using the **Text** widget.
-            if let Some(ref label) = self.maybe_label {
-                let label_color = style.label_color(&ui.theme);
-                let font_size = style.label_font_size(&ui.theme);
-                let font_id = style.label_font_id(&ui.theme).or(ui.fonts.ids().next());
-                widget::Text::new(label)
-                    .and_then(font_id, widget::Text::font_id)
-                    .bottom_right_with_margins_on(id, 7.0, 7.0 + self.radii[3]) //for bottom right corner keep text in further
-                    .font_size(font_size)
-                    .right_justify()
-                    .graphics_for(id)
-                    .color(label_color)
-                    .set(state.ids.text, ui);
+            // Generate a default label if there isn't one specified using the button's index as a
+            // seed for a simple encoder
+            let mut tmp: String;
+            let label: &str;
+            if let Some(lab) = self.maybe_label {
+                label = lab;
+            } else {
+                let gen = 53647699;
+                let mut num = id.index() << 16;
+                num = num ^ gen;
+                num = num % 1000000;
+                tmp = num.to_string();
+                tmp.insert(2, '-');
+                label = tmp.as_str();
             }
+
+            // Now we'll instantiate our label using the **Text** widget.
+            let label_color = style.label_color(&ui.theme);
+            let font_size = style.label_font_size(&ui.theme);
+            let font_id = style.label_font_id(&ui.theme).or(ui.fonts.ids().next());
+            widget::Text::new(label)
+                .and_then(font_id, widget::Text::font_id)
+                .bottom_right_with_margins_on(id, 7.0, 7.0 + self.radii[3]) //for bottom right corner keep text in further
+                .font_size(font_size)
+                .right_justify()
+                .graphics_for(id)
+                .color(label_color)
+                .set(state.ids.text, ui);
 
             event
         }
