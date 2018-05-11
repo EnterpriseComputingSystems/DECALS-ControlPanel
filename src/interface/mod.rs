@@ -22,6 +22,11 @@ use self::basic_controls_panel::BasicControlsPanel;
 use self::vertical_menu::VerticalMenu;
 
 
+
+
+const MARGIN: conrod::Scalar = 5.0;
+
+
 widget_ids! {
     pub struct InterfaceRootIDs {
         canvas,
@@ -41,7 +46,7 @@ impl InterfaceState {
         InterfaceState{root_ids: InterfaceRootIDs::new(ui.widget_id_generator()),
             alert_status: Alert::Normal,
             bcp_state: BasicControlsPanel::new(logo, ui.widget_id_generator()),
-            vm_state: VerticalMenu::new(ui.widget_id_generator()),
+            vm_state: VerticalMenu::new(ui, 8),
             network: net}
     }
 
@@ -57,5 +62,10 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
     widget::Canvas::new().pad(10.0).set(interface.root_ids.canvas, ui);
 
     basic_controls_panel::build(ui, interface);
-    vertical_menu::build(ui, interface);
+
+    interface.vm_state.build(ui, interface.alert_status,
+    conrod::widget::Canvas::new().parent(interface.root_ids.canvas)
+        .w(200.0)
+        .kid_area_h_of(interface.root_ids.canvas)
+        .right_from(interface.bcp_state.ids.canvas, MARGIN));
 }

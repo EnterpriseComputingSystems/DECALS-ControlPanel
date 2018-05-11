@@ -114,7 +114,7 @@ pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
     .down(MARGIN)
     .align_middle_x_of(state.bcp_state.ids.canvas)
     .kid_area_w_of(state.bcp_state.ids.canvas)
-    .h(310.0)
+    .h(295.0)
     .color(conrod::color::TRANSPARENT)
     .flow_down(&[
         (state.bcp_state.ids.alert_row_1, widget::Canvas::new().color(conrod::color::TRANSPARENT)),

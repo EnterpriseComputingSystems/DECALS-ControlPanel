@@ -6,141 +6,77 @@ use std::sync::Arc;
 
 use DECALS_base::support::alert::Alert;
 
-use conrod;
-use conrod::widget::id::Generator;
-
-use super::InterfaceState;
-
 use super::super::color::{ColorScheme, IteratedScheme};
 use super::super::color::colors;
 use super::super::color::colors::{Color, Pallette};
+use super::super::DECALS_widgets::rounded_button::RoundedButton;
+
+use conrod::{Colorable, Labelable, Positionable, Sizeable, Widget, UiCell, Scalar, Ui};
+use conrod::widget::Canvas;
+use conrod::widget::id::Generator;
+
 
 widget_ids! {
     pub struct VerticalMenuIDs {
         canvas,
 
-        btn1,
-        btn2,
-        btn3,
-        btn4,
-        btn5,
-        btn6,
-        btn7,
-        btn8
+        btns[]
 
     }
 }
 
 pub struct VerticalMenu {
     ids: VerticalMenuIDs,
+    num_btns: usize
 }
 
 impl VerticalMenu {
-    pub fn new(idgen: Generator)-> VerticalMenu {
-        VerticalMenu{ids: VerticalMenuIDs::new(idgen)}
+    pub fn new(ui: &mut Ui, num_btns: usize)-> VerticalMenu {
+        let mut ids = VerticalMenuIDs::new(ui.widget_id_generator());
+        ids.btns.resize(num_btns, &mut ui.widget_id_generator());
+        VerticalMenu{ids, num_btns}
     }
 
 
-}
 
-pub fn build(ui: &mut conrod::UiCell, state: &mut InterfaceState) {
-    use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget};
+    pub fn build(&self, ui: &mut UiCell, alert_status: Alert, base_canvas: Canvas) {
+        const BTN_GAP: Scalar = 2.0;
 
-    const MARGIN: conrod::Scalar = 15.0;
-    const BTN_GAP: conrod::Scalar = 2.0;
+        base_canvas.set(self.ids.canvas, ui);
 
+        let btn_height = (base_canvas.get_h(ui).unwrap() - BTN_GAP * ((self.num_btns - 1) as f64)) / (self.num_btns as f64);
 
-    widget::Canvas::new().parent(state.root_ids.canvas)
-        .w(200.0)
-        .right_from(state.bcp_state.ids.canvas, MARGIN)
-        // .right(0.0)
-        .set(state.vm_state.ids.canvas, ui);
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // Alert buttons
 
+        let mut alert_scheme: Arc<ColorScheme> = Arc::new(match alert_status {
+            Alert::Normal=> IteratedScheme::new(colors::NO_ALERT.to_vec()),
+            Alert::Yellow=> IteratedScheme::new(colors::YELLOW_ALERT.to_vec()),
+            Alert::Blue=> IteratedScheme::new(colors::BLUE_ALERT.to_vec()),
+            Alert::Black=> IteratedScheme::new(colors::BLUE_ALERT.to_vec()),
+            Alert::Red=> IteratedScheme::new(colors::RED_ALERT.to_vec())
 
+        });
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    // Alert buttons
+        for _press in RoundedButton::new()
+            .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+            .mid_top_of(self.ids.canvas)
+            .h(btn_height)
+            .set(self.ids.btns[0], ui) {
 
-    let mut alert_scheme: Arc<ColorScheme> = Arc::new(match state.alert_status {
-        Alert::Normal=> IteratedScheme::new(colors::NO_ALERT.to_vec()),
-        Alert::Yellow=> IteratedScheme::new(colors::YELLOW_ALERT.to_vec()),
-        Alert::Blue=> IteratedScheme::new(colors::BLUE_ALERT.to_vec()),
-        Alert::Black=> IteratedScheme::new(colors::BLUE_ALERT.to_vec()),
-        Alert::Red=> IteratedScheme::new(colors::RED_ALERT.to_vec())
+        }
 
-    });
+        for i in 1..self.num_btns {
+            for _press in RoundedButton::new()
+                .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+                .down(BTN_GAP)
+                .h(btn_height)
+                .set(self.ids.btns[i], ui) {
 
-    for _press in widget::Button::new()
-        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
-        .label("test1")
-        .mid_top_of(state.vm_state.ids.canvas)
-        .w_h(200.0, 250.0)
-        .set(state.vm_state.ids.btn1, ui) {
+            }
+        }
 
-    }
-
-    for _press in widget::Button::new()
-        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
-        .label("test2")
-        .down(BTN_GAP)
-        .w_h(200.0, 70.0)
-        .set(state.vm_state.ids.btn2, ui) {
 
     }
-
-    for _press in widget::Button::new()
-        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
-        .label("test3")
-        .down(BTN_GAP)
-        .w_h(200.0, 100.0)
-        .set(state.vm_state.ids.btn3, ui) {
-
-    }
-
-    for _press in widget::Button::new()
-        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
-        .label("test4")
-        .down(BTN_GAP)
-        .w_h(200.0, 120.0)
-        .set(state.vm_state.ids.btn4, ui) {
-
-    }
-
-    for _press in widget::Button::new()
-        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
-        .label("test5")
-        .down(BTN_GAP)
-        .w_h(200.0, 70.0)
-        .set(state.vm_state.ids.btn5, ui) {
-
-    }
-
-    for _press in widget::Button::new()
-        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
-        .label("test6")
-        .down(BTN_GAP)
-        .w_h(200.0, 90.0)
-        .set(state.vm_state.ids.btn6, ui) {
-
-    }
-
-    for _press in widget::Button::new()
-        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
-        .label("test7")
-        .down(BTN_GAP)
-        .w_h(200.0, 100.0)
-        .set(state.vm_state.ids.btn7, ui) {
-
-    }
-
-    for _press in widget::Button::new()
-        .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
-        .label("test8")
-        .down(BTN_GAP)
-        .w_h(200.0, 250.0)
-        .set(state.vm_state.ids.btn8, ui) {
-
-    }
-
 
 }
