@@ -11,6 +11,7 @@ use super::super::color::colors;
 use super::super::color::colors::{Color, Pallette};
 use super::super::DECALS_widgets::rounded_button::RoundedButton;
 
+use conrod;
 use conrod::{Colorable, Labelable, Positionable, Sizeable, Widget, UiCell, Scalar, Ui};
 use conrod::widget::Canvas;
 use conrod::widget::id::Generator;
@@ -42,6 +43,7 @@ impl VerticalMenu {
     pub fn build(&self, ui: &mut UiCell, alert_status: Alert, base_canvas: Canvas) {
         const BTN_GAP: Scalar = 2.0;
 
+        base_canvas.color(conrod::color::TRANSPARENT);
         base_canvas.set(self.ids.canvas, ui);
 
         let btn_height = (base_canvas.get_h(ui).unwrap() - BTN_GAP * ((self.num_btns - 1) as f64)) / (self.num_btns as f64);
