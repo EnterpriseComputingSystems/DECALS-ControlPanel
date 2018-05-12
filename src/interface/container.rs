@@ -19,6 +19,7 @@ use conrod::widget::primitive::shape::rectangle::Rectangle;
 const BORDER_RECT_WIDTH: Scalar = 20.0;
 const BTN_GAP: Scalar = 2.0;
 const VERT_MENU_WIDTH: Scalar = 70.0;
+const CHILD_MARGIN: Scalar = 20.0;
 
 
 widget_ids! {
@@ -45,7 +46,7 @@ impl Container {
 
 
 
-    pub fn build(&self, ui: &mut UiCell, alert_status: Alert, base_canvas: Canvas) {
+    pub fn build(&self, ui: &mut UiCell, alert_status: Alert, base_canvas: Canvas)-> Canvas {
 
 
         base_canvas.color(conrod::color::RED);
@@ -61,22 +62,19 @@ impl Container {
             menu_height -= BORDER_RECT_WIDTH + BTN_GAP;
         }
 
-        let vm_canvas = Canvas::new().parent(self.ids.canvas)
+        let mut vm_canvas = Canvas::new().parent(self.ids.canvas)
                         .h(menu_height)
                         .w(VERT_MENU_WIDTH);
 
+
         // If just a top border, put in bottom
-        // if self.top_border && !self.bottom_border {
-            vm_canvas.bottom_left_of(self.ids.canvas);
-        //
-        // // If just a bottom border, put in bottom
-        // } else if !self.top_border && self.bottom_border {
-        //     vm_canvas.top_left_of(self.ids.canvas);
-        //
-        // // If both or neither borders, put in middle
-        // } else {
-            // vm_canvas.mid_left_of(self.ids.canvas);
-        // }
+        // If just a bottom border, put in top
+        // If both or neither borders, put in middle
+        vm_canvas = match (self.top_border, self.bottom_border) {
+            (true, false)=>vm_canvas.bottom_left_of(self.ids.canvas),
+            (false, true)=>vm_canvas.top_left_of(self.ids.canvas),
+            _=>vm_canvas.mid_left_of(self.ids.canvas)
+        };
 
 
         self.vert_menu.build(ui, alert_status, vm_canvas);
@@ -104,6 +102,10 @@ impl Container {
                 .mid_bottom_of(self.ids.canvas)
                 .set(self.ids.top_rect, ui);
         }
+
+        Canvas::new().parent(self.ids.canvas)
+            .bottom_right()
+            .wh([base_dim[0] - VERT_MENU_WIDTH - CHILD_MARGIN, base_dim[1] - BORDER_RECT_WIDTH - CHILD_MARGIN])
 
     }
 

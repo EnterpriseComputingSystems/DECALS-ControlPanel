@@ -87,12 +87,12 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
     let top_height = 2.0 * window[1] / 3.0;
     let bottom_height = window[1] - top_height - MARGIN;
 
-    interface.bottom_container.build(ui, interface.alert_status,
+    let bottom_child_canvas = interface.bottom_container.build(ui, interface.alert_status,
         conrod::widget::Canvas::new().parent(interface.root_ids.canvas)
             .wh([width, bottom_height])
             .bottom_right_of(interface.root_ids.canvas));
 
-    interface.top_container.build(ui, interface.alert_status,
+    let top_child_canvas = interface.top_container.build(ui, interface.alert_status,
         conrod::widget::Canvas::new().parent(interface.root_ids.canvas)
             .wh([width, top_height])
             .top_right_of(interface.root_ids.canvas));
