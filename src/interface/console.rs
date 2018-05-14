@@ -15,7 +15,7 @@ use conrod::widget::primitive::text::Text;
 use log;
 use log::{Record, Level, Metadata};
 
-const MAX_LINES: usize = 5;
+const MAX_LINES: usize = 15;
 
 
 widget_ids! {
@@ -48,6 +48,7 @@ impl Console {
 
         let mut txt_out = String::new();
         for t in self.txt.lock().unwrap().iter() {
+            txt_out += "\n";
             txt_out += t;
         }
 
@@ -61,6 +62,7 @@ impl Console {
 
     // Initialize logger aspect
     pub fn init_logging(&self) -> Result<(), log::SetLoggerError> {
+        log::set_max_level(Level::Trace.to_level_filter());
         log::set_boxed_logger(Box::new(ConsoleLogger{txt: self.txt.clone()}))
     }
 
@@ -71,11 +73,11 @@ struct ConsoleLogger {
 }
 
 impl log::Log for ConsoleLogger {
-    fn enabled(&self, metadata: &Metadata) -> bool {true
+    fn enabled(&self, metadata: &Metadata) -> bool {
+        metadata.level() <= Level::Trace
     }
 
     fn log(&self, record: &Record) {
-        println!("Hello");
         if self.enabled(record.metadata()) {
             let mut lst = self.txt.lock().unwrap();
 

@@ -25,9 +25,6 @@ use self::vertical_menu::VerticalMenu;
 use self::container::Container;
 use self::console::Console;
 
-
-
-
 const MARGIN: Scalar = 5.0;
 const PADDING: Scalar = 10.0;
 
@@ -74,8 +71,6 @@ impl InterfaceState {
 }
 
 pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
-
-    error!("asd");
 
     interface.alert_status = alert::get_alert_from_text(interface.network.get_data_value(&alert::ALERT_KEY.to_string()));
 

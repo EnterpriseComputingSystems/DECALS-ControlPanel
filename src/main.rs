@@ -4,8 +4,11 @@
 #[macro_use] extern crate conrod_derive;
 extern crate DECALS_base;
 extern crate rand;
+extern crate find_folder;
+extern crate piston_window;
 #[macro_use]
 extern crate log;
+extern crate simple_logger;
 mod interface;
 mod color;
 mod DECALS_widgets;
@@ -20,9 +23,11 @@ fn main() {
 }
 
 mod feature {
-    extern crate find_folder;
-    extern crate piston_window;
     use conrod;
+
+    use find_folder;
+
+    use piston_window;
 
     use interface;
     use interface::InterfaceState;
@@ -35,10 +40,10 @@ mod feature {
     pub const WIDTH: u32 = 1920;
     pub const HEIGHT: u32 = 1080;
 
-    use self::piston_window::{PistonWindow, UpdateEvent, Window, WindowSettings};
-    use self::piston_window::{Flip, G2d, G2dTexture, Texture, TextureSettings};
-    use self::piston_window::OpenGL;
-    use self::piston_window::texture::UpdateTexture;
+    use piston_window::{PistonWindow, UpdateEvent, Window, WindowSettings};
+    use piston_window::{Flip, G2d, G2dTexture, Texture, TextureSettings};
+    use piston_window::OpenGL;
+    use piston_window::texture::UpdateTexture;
 
 
     pub fn main() {
