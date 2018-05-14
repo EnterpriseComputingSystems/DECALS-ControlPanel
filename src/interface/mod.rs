@@ -3,6 +3,7 @@
 mod basic_controls_panel;
 mod vertical_menu;
 mod container;
+mod console;
 
 use conrod;
 use conrod::{Ui, UiCell};
@@ -22,6 +23,7 @@ use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget, Scala
 use self::basic_controls_panel::BasicControlsPanel;
 use self::vertical_menu::VerticalMenu;
 use self::container::Container;
+use self::console::Console;
 
 
 
@@ -33,6 +35,8 @@ const PADDING: Scalar = 10.0;
 widget_ids! {
     pub struct InterfaceRootIDs {
         canvas,
+
+
     }
 }
 
@@ -42,6 +46,7 @@ pub struct InterfaceState {
     vm_state: VerticalMenu,
     top_container: Container,
     bottom_container: Container,
+    console: Console,
     alert_status: Alert,
     network: Arc<Network>
 }
@@ -54,6 +59,7 @@ impl InterfaceState {
             vm_state: VerticalMenu::new(ui, 8),
             bottom_container: Container::new(ui, 2, true, false),
             top_container: Container::new(ui, 2, false, true),
+            console: Console::new(ui.widget_id_generator()),
             network: net}
     }
 
@@ -98,6 +104,7 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
             .top_right_of(interface.root_ids.canvas));
 
 
+    interface.console.build(ui, bottom_child_canvas);
 
 
 }

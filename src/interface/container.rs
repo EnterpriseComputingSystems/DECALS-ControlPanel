@@ -9,7 +9,6 @@ use DECALS_base::support::alert::Alert;
 use super::vertical_menu::VerticalMenu;
 use super::super::color::{ColorScheme, IteratedScheme};
 use super::super::color::colors;
-use super::super::color::colors::{Color, Pallette};
 
 use conrod;
 use conrod::{Colorable, Positionable, Sizeable, Widget, UiCell, Scalar, Ui};
@@ -49,7 +48,7 @@ impl Container {
     pub fn build(&self, ui: &mut UiCell, alert_status: Alert, base_canvas: Canvas)-> Canvas {
 
 
-        base_canvas.color(conrod::color::RED);
+        base_canvas.color(conrod::color::TRANSPARENT);
         base_canvas.set(self.ids.canvas, ui);
         let base_dim = base_canvas.get_wh(ui).unwrap();
         let mut menu_height = base_dim[1];

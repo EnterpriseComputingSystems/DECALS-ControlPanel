@@ -1,13 +1,14 @@
 
 
 
-/// The module in which we'll implement our own custom circular button.
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Rounded Button
 pub mod rounded_button {
     use conrod::{self, widget, Colorable, Labelable, Point, Positionable, Widget, Rect, Scalar, Range, Sizeable};
+    use conrod::widget::primitive::shape::oval::Circumference;
 
     use std::f64::consts::PI;
 
-    use conrod::widget::primitive::shape::oval::Circumference;
 
     /// The type upon which we'll implement the `Widget` trait.
     #[derive(WidgetCommon)]
