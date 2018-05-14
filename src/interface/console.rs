@@ -1,6 +1,7 @@
 
 
 use std::collections::LinkedList;
+use std::sync::{Arc, Mutex};
 
 use super::super::color::{ColorScheme, IteratedScheme};
 use super::super::color::colors;
@@ -10,6 +11,11 @@ use conrod::{Colorable, Positionable, Sizeable, Widget, UiCell, Scalar, Ui};
 use conrod::widget::Canvas;
 use conrod::widget::id::Generator;
 use conrod::widget::primitive::text::Text;
+
+use log;
+use log::{Record, Level, Metadata};
+
+const MAX_LINES: usize = 5;
 
 
 widget_ids! {
@@ -22,13 +28,14 @@ widget_ids! {
 
 pub struct Console {
     ids: ConsoleIDs,
-    txt: LinkedList<String>
+    txt: Arc<Mutex<LinkedList<String>>>
+
 }
 
 impl Console {
     pub fn new(id_gen: Generator)-> Console {
         Console{ids: ConsoleIDs::new(id_gen),
-                txt: LinkedList::new()}
+                txt: Arc::new(Mutex::new(LinkedList::new()))}
     }
 
 
@@ -39,10 +46,8 @@ impl Console {
         base_canvas.color(conrod::color::TRANSPARENT);
         base_canvas.set(self.ids.canvas, ui);
 
-        base_canvas.set(self.ids.canvas, ui);
-
         let mut txt_out = String::new();
-        for t in self.txt.iter() {
+        for t in self.txt.lock().unwrap().iter() {
             txt_out += t;
         }
 
@@ -54,4 +59,38 @@ impl Console {
 
     }
 
+    // Initialize logger aspect
+    pub fn init_logging(&self) -> Result<(), log::SetLoggerError> {
+        log::set_boxed_logger(Box::new(ConsoleLogger{txt: self.txt.clone()}))
+    }
+
+}
+
+struct ConsoleLogger {
+    txt: Arc<Mutex<LinkedList<String>>>
+}
+
+impl log::Log for ConsoleLogger {
+    fn enabled(&self, metadata: &Metadata) -> bool {true
+    }
+
+    fn log(&self, record: &Record) {
+        println!("Hello");
+        if self.enabled(record.metadata()) {
+            let mut lst = self.txt.lock().unwrap();
+
+            if lst.len() == MAX_LINES {
+                lst.pop_front();
+            }
+
+            let out = format!("{} - {}", record.level(), record.args());
+            lst.push_back(out.clone());
+
+            println!("{}", out);
+
+
+        }
+    }
+
+    fn flush(&self) {}
 }

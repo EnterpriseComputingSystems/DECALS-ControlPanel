@@ -10,3 +10,4 @@ conrod = { version = "0.58", features = ["piston"] }
 conrod_derive = "0.1.0"
 find_folder = "0.3.0"
 rand = "0.4"
+log = { version = "0.4"}

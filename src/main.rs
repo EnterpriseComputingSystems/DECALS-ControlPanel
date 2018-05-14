@@ -4,6 +4,8 @@
 #[macro_use] extern crate conrod_derive;
 extern crate DECALS_base;
 extern crate rand;
+#[macro_use]
+extern crate log;
 mod interface;
 mod color;
 mod DECALS_widgets;

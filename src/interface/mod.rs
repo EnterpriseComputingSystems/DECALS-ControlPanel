@@ -53,14 +53,18 @@ pub struct InterfaceState {
 
 impl InterfaceState {
     pub fn new(logo: conrod::image::Id, ui: &mut Ui, net: Arc<Network>)-> InterfaceState {
-        InterfaceState{root_ids: InterfaceRootIDs::new(ui.widget_id_generator()),
+        let interface = InterfaceState{root_ids: InterfaceRootIDs::new(ui.widget_id_generator()),
             alert_status: Alert::Normal,
             bcp_state: BasicControlsPanel::new(logo, ui.widget_id_generator()),
             vm_state: VerticalMenu::new(ui, 8),
             bottom_container: Container::new(ui, 2, true, false),
             top_container: Container::new(ui, 2, false, true),
             console: Console::new(ui.widget_id_generator()),
-            network: net}
+            network: net};
+
+
+        interface.console.init_logging().unwrap();
+        return interface;
     }
 
     pub fn set_alert_state(&mut self, alstate: Alert) {
@@ -71,6 +75,7 @@ impl InterfaceState {
 
 pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
 
+    error!("asd");
 
     interface.alert_status = alert::get_alert_from_text(interface.network.get_data_value(&alert::ALERT_KEY.to_string()));
 
@@ -105,6 +110,5 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
 
 
     interface.console.build(ui, bottom_child_canvas);
-
 
 }
