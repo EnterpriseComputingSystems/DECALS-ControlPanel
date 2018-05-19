@@ -12,7 +12,7 @@ use conrod::widget::primitive::text::Text;
 use log;
 use log::{Record, Level, Metadata};
 
-const MAX_LINES: usize = 15;
+const MAX_LINES: usize = 12;
 
 
 widget_ids! {
