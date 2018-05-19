@@ -3,11 +3,8 @@
 use std::collections::LinkedList;
 use std::sync::{Arc, Mutex};
 
-use super::super::color::{ColorScheme, IteratedScheme};
-use super::super::color::colors;
-
 use conrod;
-use conrod::{Colorable, Positionable, Sizeable, Widget, UiCell, Scalar, Ui};
+use conrod::{Colorable, Positionable, Widget, UiCell};
 use conrod::widget::Canvas;
 use conrod::widget::id::Generator;
 use conrod::widget::primitive::text::Text;
@@ -68,6 +65,7 @@ impl Console {
 
 }
 
+// Logs information to the consoloe and to stdout
 struct ConsoleLogger {
     txt: Arc<Mutex<LinkedList<String>>>
 }
