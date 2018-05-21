@@ -63,7 +63,9 @@ impl InterfaceState {
     pub fn new(logo: conrod::image::Id, ui: &mut Ui, net: Arc<Network>)-> InterfaceState {
 
         let vm_btn_handler = |btn: usize| {
-            warn!("{}", btn);
+            match btn {
+                _=>()
+            }
         };
 
         let vm_labels = VM_LABELS.to_vec().iter().map(|s| s.to_string()).collect();
@@ -74,7 +76,7 @@ impl InterfaceState {
             vm_state: VerticalMenu::new(ui, VM_NUM_BTNS, vm_labels, Box::new(vm_btn_handler)),
             vm_cs: get_colorscheme(Alert::Normal),
             bottom_container: Container::new(ui, 2, true, false),
-            top_container: Container::new(ui, 2, false, true),
+            top_container: Container::new(ui, 6, false, true),
             console: Console::new(ui.widget_id_generator()),
             network: net,
             num_devices: 1};

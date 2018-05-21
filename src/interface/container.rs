@@ -8,8 +8,7 @@ use super::vertical_menu::VerticalMenu;
 use super::super::color::ColorScheme;
 use super::super::color::colors;
 
-use conrod;
-use conrod::{Colorable, Positionable, Sizeable, Widget, UiCell, Scalar, Ui};
+use conrod::{Positionable, Sizeable, Widget, UiCell, Scalar, Ui};
 use conrod::widget::Canvas;
 use conrod::widget::primitive::shape::rectangle::Rectangle;
 
@@ -17,6 +16,8 @@ const BORDER_RECT_WIDTH: Scalar = 20.0;
 const BTN_GAP: Scalar = 2.0;
 const VERT_MENU_WIDTH: Scalar = 70.0;
 const CHILD_MARGIN: Scalar = 20.0;
+
+const ANIMATION_FREQ: u32 = 2;
 
 
 widget_ids! {
@@ -33,15 +34,23 @@ pub struct Container {
     top_border: bool,
     bottom_border: bool,
     last_alert: Alert,
-    cscheme: ColorScheme
+    cscheme: ColorScheme,
+    ticks: u32
 }
 
 impl Container {
     pub fn new(ui: &mut Ui, num_btns: usize, top_border: bool, bottom_border: bool)-> Container {
 
-        let vm_labels = vec!("".to_string(), "".to_string());
-        let vm_btn_handler = |btn: usize| {
+        let mut vm_labels: Vec<String> = Vec::new();
 
+        for i in 0..num_btns {
+            vm_labels.push(String::new());
+        }
+
+        let vm_btn_handler = |btn: usize| {
+            match btn {
+                _=>()
+            }
         };
 
 
@@ -49,7 +58,8 @@ impl Container {
             vert_menu: VerticalMenu::new(ui, num_btns, vm_labels, Box::new(vm_btn_handler)),
             top_border, bottom_border,
             cscheme: ColorScheme::new(colors::NO_ALERT.to_vec()),
-            last_alert: Alert::Normal}
+            last_alert: Alert::Normal,
+            ticks: 0}
     }
 
 
@@ -59,8 +69,18 @@ impl Container {
         if alert_status != self.last_alert {
             self.last_alert = alert_status;
             self.cscheme = super::get_colorscheme(alert_status);
+            self.ticks = 0;
         } else {
             self.cscheme.reset_to_start();
+        }
+
+
+        if alert_status != Alert::Normal {
+            self.ticks = (self.ticks + 1) % ANIMATION_FREQ;
+
+            if self.ticks == ANIMATION_FREQ - 1 {
+                self.cscheme.rotate_start();
+            }
         }
 
 
