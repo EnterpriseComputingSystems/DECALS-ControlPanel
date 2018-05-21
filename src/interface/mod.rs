@@ -34,6 +34,8 @@ const MARGIN: Scalar = 5.0;
 const PADDING: Scalar = 10.0;
 
 const VM_WIDTH: Scalar = 200.0;
+const VM_NUM_BTNS: usize = 8;
+const VM_LABELS: [&str; 8] = ["", "", "", "", "", "", "", "Settings"];
 
 
 widget_ids! {
@@ -59,10 +61,17 @@ pub struct InterfaceState {
 
 impl InterfaceState {
     pub fn new(logo: conrod::image::Id, ui: &mut Ui, net: Arc<Network>)-> InterfaceState {
+
+        let vm_btn_handler = |btn: usize| {
+            warn!("{}", btn);
+        };
+
+        let vm_labels = VM_LABELS.to_vec().iter().map(|s| s.to_string()).collect();
+
         let interface = InterfaceState{root_ids: InterfaceRootIDs::new(ui.widget_id_generator()),
             alert_status: Alert::Normal,
             bcp_state: BasicControlsPanel::new(logo, ui.widget_id_generator()),
-            vm_state: VerticalMenu::new(ui, 8),
+            vm_state: VerticalMenu::new(ui, VM_NUM_BTNS, vm_labels, Box::new(vm_btn_handler)),
             vm_cs: get_colorscheme(Alert::Normal),
             bottom_container: Container::new(ui, 2, true, false),
             top_container: Container::new(ui, 2, false, true),

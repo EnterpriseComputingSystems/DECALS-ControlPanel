@@ -38,8 +38,15 @@ pub struct Container {
 
 impl Container {
     pub fn new(ui: &mut Ui, num_btns: usize, top_border: bool, bottom_border: bool)-> Container {
+
+        let vm_labels = vec!("".to_string(), "".to_string());
+        let vm_btn_handler = |btn: usize| {
+
+        };
+
+
         Container{ids: ContainerIDs::new(ui.widget_id_generator()),
-            vert_menu: VerticalMenu::new(ui, num_btns),
+            vert_menu: VerticalMenu::new(ui, num_btns, vm_labels, Box::new(vm_btn_handler)),
             top_border, bottom_border,
             cscheme: ColorScheme::new(colors::NO_ALERT.to_vec()),
             last_alert: Alert::Normal}
