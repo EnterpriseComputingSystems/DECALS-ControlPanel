@@ -57,7 +57,6 @@ impl Container {
         }
 
 
-        base_canvas.color(conrod::color::TRANSPARENT);
         base_canvas.set(self.ids.canvas, ui);
         let base_dim = base_canvas.get_wh(ui).unwrap();
         let mut menu_height = base_dim[1];

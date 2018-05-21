@@ -3,8 +3,7 @@
 use std::collections::LinkedList;
 use std::sync::{Arc, Mutex};
 
-use conrod;
-use conrod::{Colorable, Positionable, Widget, UiCell};
+use conrod::{Positionable, Widget, UiCell};
 use conrod::widget::Canvas;
 use conrod::widget::id::Generator;
 use conrod::widget::primitive::text::Text;
@@ -40,7 +39,6 @@ impl Console {
     pub fn build(&self, ui: &mut UiCell, base_canvas: Canvas) {
 
 
-        base_canvas.color(conrod::color::TRANSPARENT);
         base_canvas.set(self.ids.canvas, ui);
 
         let mut txt_out = String::new();

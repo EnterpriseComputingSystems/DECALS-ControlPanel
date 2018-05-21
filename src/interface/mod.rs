@@ -21,7 +21,7 @@ use super::color::colors;
 use std::sync::{Arc};
 
 
-use conrod::{Colorable, Labelable, Positionable, Sizeable, Widget, Scalar};
+use conrod::{Colorable, Positionable, Sizeable, Widget, Scalar};
 use conrod::widget::Canvas;
 
 

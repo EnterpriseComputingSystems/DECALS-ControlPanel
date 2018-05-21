@@ -34,7 +34,6 @@ impl VerticalMenu {
     pub fn build(&self, ui: &mut UiCell, cs: &mut ColorScheme, base_canvas: Canvas) {
         const BTN_GAP: Scalar = 2.0;
 
-        base_canvas.color(conrod::color::TRANSPARENT);
         base_canvas.set(self.ids.canvas, ui);
 
         let btn_height = (base_canvas.get_h(ui).unwrap() - BTN_GAP * ((self.num_btns - 1) as f64)) / (self.num_btns as f64);

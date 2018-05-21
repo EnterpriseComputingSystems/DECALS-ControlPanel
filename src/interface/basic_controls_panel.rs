@@ -104,12 +104,11 @@ impl BasicControlsPanel {
         .align_middle_x_of(self.ids.canvas)
         .kid_area_w_of(self.ids.canvas)
         .h(295.0)
-        .color(conrod::color::TRANSPARENT)
         .flow_down(&[
-            (self.ids.alert_row_1, widget::Canvas::new().color(conrod::color::TRANSPARENT)),
-            (self.ids.alert_row_2, widget::Canvas::new().color(conrod::color::TRANSPARENT)),
-            (self.ids.alert_row_3, widget::Canvas::new().color(conrod::color::TRANSPARENT)),
-            (self.ids.alert_row_4, widget::Canvas::new().color(conrod::color::TRANSPARENT))
+            (self.ids.alert_row_1, widget::Canvas::new()),
+            (self.ids.alert_row_2, widget::Canvas::new()),
+            (self.ids.alert_row_3, widget::Canvas::new()),
+            (self.ids.alert_row_4, widget::Canvas::new())
             ])
             .set(self.ids.alert_canvas, ui);
 
