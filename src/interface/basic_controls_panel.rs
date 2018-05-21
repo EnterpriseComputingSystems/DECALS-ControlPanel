@@ -15,7 +15,7 @@ use conrod::widget::id::Generator;
 use conrod::widget::primitive::text::Text;
 
 use super::super::DECALS_widgets::rounded_button::RoundedButton;
-use super::super::color::{ColorScheme, IteratedScheme};
+use super::super::color::ColorScheme;
 use super::super::color::colors;
 use super::super::color::colors::{Color, Pallette};
 
@@ -97,14 +97,7 @@ impl BasicControlsPanel {
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Alert buttons
 
-        let mut alert_scheme: Arc<ColorScheme> = Arc::new(match alert_status {
-            Alert::Normal=> IteratedScheme::new(colors::NO_ALERT.to_vec()),
-            Alert::Yellow=> IteratedScheme::new(colors::YELLOW_ALERT.to_vec()),
-            Alert::Blue=> IteratedScheme::new(colors::BLUE_ALERT.to_vec()),
-            Alert::Black=> IteratedScheme::new(colors::BLUE_ALERT.to_vec()),
-            Alert::Red=> IteratedScheme::new(colors::RED_ALERT.to_vec())
-
-        });
+        let mut cscheme = super::get_colorscheme(alert_status);
 
         widget::Canvas::new()
         .down(MARGIN)
@@ -121,7 +114,7 @@ impl BasicControlsPanel {
             .set(self.ids.alert_canvas, ui);
 
         for _press in RoundedButton::rounded_left(BTN_RADIUS)
-            .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+            .color(cscheme.get_next_color())
             .mid_left_of(self.ids.alert_row_1)
             .w_h(150.0, 70.0)
             .set(self.ids.alert_1_1, ui)
@@ -130,7 +123,7 @@ impl BasicControlsPanel {
             }
 
         for _press in RoundedButton::new()
-            .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+            .color(cscheme.get_next_color())
             .label(&alert::get_alert_text(Alert::Normal))
             .right(BTN_GAP)
             .w_h(150.0, 70.0)
@@ -140,7 +133,7 @@ impl BasicControlsPanel {
             }
 
         for _press in RoundedButton::rounded_left(BTN_RADIUS)
-            .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+            .color(cscheme.get_next_color())
             .mid_left_of(self.ids.alert_row_2)
             .w_h(150.0, 70.0)
             .set(self.ids.alert_1_2, ui)
@@ -149,7 +142,7 @@ impl BasicControlsPanel {
             }
 
         for _press in RoundedButton::new()
-            .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+            .color(cscheme.get_next_color())
             .label(&alert::get_alert_text(Alert::Blue))
             .right(BTN_GAP)
             .w_h(150.0, 70.0)
@@ -159,7 +152,7 @@ impl BasicControlsPanel {
             }
 
         for _press in RoundedButton::rounded_left(BTN_RADIUS)
-            .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+            .color(cscheme.get_next_color())
             .mid_left_of(self.ids.alert_row_3)
             .w_h(150.0, 70.0)
             .set(self.ids.alert_1_3, ui)
@@ -168,7 +161,7 @@ impl BasicControlsPanel {
             }
 
         for _press in RoundedButton::new()
-            .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+            .color(cscheme.get_next_color())
             .label(&alert::get_alert_text(Alert::Yellow))
             .right(BTN_GAP)
             .w_h(150.0, 70.0)
@@ -178,7 +171,7 @@ impl BasicControlsPanel {
             }
 
         for _press in RoundedButton::rounded_left(BTN_RADIUS)
-            .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+            .color(cscheme.get_next_color())
             .mid_left_of(self.ids.alert_row_4)
             .w_h(150.0, 70.0)
             .set(self.ids.alert_1_4, ui)
@@ -187,7 +180,7 @@ impl BasicControlsPanel {
             }
 
         for _press in RoundedButton::new()
-            .color(Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+            .color(cscheme.get_next_color())
             .label(&alert::get_alert_text(Alert::Red))
             .right(BTN_GAP)
             .w_h(150.0, 70.0)

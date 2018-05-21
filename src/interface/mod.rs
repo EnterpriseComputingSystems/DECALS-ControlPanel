@@ -14,6 +14,8 @@ use DECALS_base::support::alert::Alert;
 use DECALS_base::Network;
 use DECALS_base::event::Event;
 
+use super::color::ColorScheme;
+use super::color::colors;
 
 
 use std::sync::{Arc};
@@ -46,6 +48,7 @@ pub struct InterfaceState {
     root_ids: InterfaceRootIDs,
     bcp_state: BasicControlsPanel,
     vm_state: VerticalMenu,
+    vm_cs: ColorScheme,
     top_container: Container,
     bottom_container: Container,
     console: Console,
@@ -60,6 +63,7 @@ impl InterfaceState {
             alert_status: Alert::Normal,
             bcp_state: BasicControlsPanel::new(logo, ui.widget_id_generator()),
             vm_state: VerticalMenu::new(ui, 8),
+            vm_cs: get_colorscheme(Alert::Normal),
             bottom_container: Container::new(ui, 2, true, false),
             top_container: Container::new(ui, 2, false, true),
             console: Console::new(ui.widget_id_generator()),
@@ -82,7 +86,10 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
         loop {
             match rec.try_recv() {
                 Ok(Event::DataChange(dp))=>match dp.key.as_ref() {
-                    alert::ALERT_KEY=>interface.alert_status = alert::get_alert_from_text(dp.value),
+                    alert::ALERT_KEY=>{
+                        interface.alert_status = alert::get_alert_from_text(dp.value);
+                        interface.vm_cs = get_colorscheme(interface.alert_status);
+                    },
                     _=>{}
                 },
                 Ok(Event::UnitDiscovered(_))=>interface.num_devices = interface.network.get_num_devices(),
@@ -103,7 +110,9 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
         .top_left_of(interface.root_ids.canvas));
 
     // Vertical Menu
-    interface.vm_state.build(ui, interface.alert_status,
+    interface.vm_cs.reset_to_start();
+
+    interface.vm_state.build(ui, &mut interface.vm_cs,
         Canvas::new().parent(interface.root_ids.canvas)
             .w(VM_WIDTH)
             .kid_area_h_of(interface.root_ids.canvas)
@@ -131,5 +140,16 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
 
     // Console
     interface.console.build(ui, bottom_child_canvas);
+
+}
+
+pub fn get_colorscheme(al: Alert) ->ColorScheme {
+    match al {
+        Alert::Normal=> ColorScheme::new(colors::NO_ALERT.to_vec()),
+        Alert::Yellow=> ColorScheme::new(colors::YELLOW_ALERT.to_vec()),
+        Alert::Blue=> ColorScheme::new(colors::BLUE_ALERT.to_vec()),
+        Alert::Black=> ColorScheme::new(colors::BLUE_ALERT.to_vec()),
+        Alert::Red=> ColorScheme::new(colors::RED_ALERT.to_vec())
+    }
 
 }

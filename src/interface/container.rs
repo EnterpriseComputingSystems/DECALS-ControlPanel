@@ -2,12 +2,10 @@
 
 extern crate rand;
 
-use std::sync::Arc;
-
 use DECALS_base::support::alert::Alert;
 
 use super::vertical_menu::VerticalMenu;
-use super::super::color::{ColorScheme, IteratedScheme};
+use super::super::color::ColorScheme;
 use super::super::color::colors;
 
 use conrod;
@@ -33,19 +31,30 @@ pub struct Container {
     ids: ContainerIDs,
     vert_menu: VerticalMenu,
     top_border: bool,
-    bottom_border: bool
+    bottom_border: bool,
+    last_alert: Alert,
+    cscheme: ColorScheme
 }
 
 impl Container {
     pub fn new(ui: &mut Ui, num_btns: usize, top_border: bool, bottom_border: bool)-> Container {
         Container{ids: ContainerIDs::new(ui.widget_id_generator()),
             vert_menu: VerticalMenu::new(ui, num_btns),
-            top_border, bottom_border}
+            top_border, bottom_border,
+            cscheme: ColorScheme::new(colors::NO_ALERT.to_vec()),
+            last_alert: Alert::Normal}
     }
 
 
 
-    pub fn build(&self, ui: &mut UiCell, alert_status: Alert, base_canvas: Canvas)-> Canvas {
+    pub fn build(&mut self, ui: &mut UiCell, alert_status: Alert, base_canvas: Canvas)-> Canvas {
+
+        if alert_status != self.last_alert {
+            self.last_alert = alert_status;
+            self.cscheme = super::get_colorscheme(alert_status);
+        } else {
+            self.cscheme.reset_to_start();
+        }
 
 
         base_canvas.color(conrod::color::TRANSPARENT);
@@ -61,6 +70,15 @@ impl Container {
             menu_height -= BORDER_RECT_WIDTH + BTN_GAP;
         }
 
+        //Add top border
+        if self.top_border {
+            Rectangle::fill_with([base_dim[0], BORDER_RECT_WIDTH], self.cscheme.get_next_color())
+                .mid_top_of(self.ids.canvas)
+                .set(self.ids.top_rect, ui);
+        }
+
+
+        // Add buttons
         let mut vm_canvas = Canvas::new().parent(self.ids.canvas)
                         .h(menu_height)
                         .w(VERT_MENU_WIDTH);
@@ -76,28 +94,11 @@ impl Container {
         };
 
 
-        self.vert_menu.build(ui, alert_status, vm_canvas);
+        self.vert_menu.build(ui, &mut self.cscheme, vm_canvas);
 
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        // Alert buttons
-
-        let mut alert_scheme: Arc<ColorScheme> = Arc::new(match alert_status {
-            Alert::Normal=> IteratedScheme::new(colors::NO_ALERT.to_vec()),
-            Alert::Yellow=> IteratedScheme::new(colors::YELLOW_ALERT.to_vec()),
-            Alert::Blue=> IteratedScheme::new(colors::BLUE_ALERT.to_vec()),
-            Alert::Black=> IteratedScheme::new(colors::BLUE_ALERT.to_vec()),
-            Alert::Red=> IteratedScheme::new(colors::RED_ALERT.to_vec())
-
-        });
-
-        if self.top_border {
-            Rectangle::fill_with([base_dim[0], BORDER_RECT_WIDTH], Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
-                .mid_top_of(self.ids.canvas)
-                .set(self.ids.top_rect, ui);
-        }
-
+        // Add lower border
         if self.bottom_border {
-            Rectangle::fill_with([base_dim[0], BORDER_RECT_WIDTH], Arc::get_mut(&mut alert_scheme).unwrap().get_next_color())
+            Rectangle::fill_with([base_dim[0], BORDER_RECT_WIDTH], self.cscheme.get_next_color())
                 .mid_bottom_of(self.ids.canvas)
                 .set(self.ids.top_rect, ui);
         }

@@ -5,66 +5,49 @@ use rand;
 
 use self::colors::{Color, Pallette};
 
+use std::boxed::Box;
 
-pub trait ColorScheme {
-    fn get_next_color(&mut self)->Color;
-    fn get_num_color(&self, num: usize)->Color;
-}
-
-
-
-//~~~~~~~~~~~~~~Random~~~~~~~~~~~~~~~~~~~~~~
-pub struct RandScheme {
-    pallette: Pallette
-}
-
-impl RandScheme {
-    pub fn new(pallette: Pallette)->RandScheme {
-        return RandScheme{pallette};
-    }
-}
-
-impl ColorScheme for RandScheme {
-    fn get_next_color(&mut self)->Color {
-        return self.get_num_color(rand::random::<usize>() % self.pallette.len())
-    }
-
-    fn get_num_color(&self, num: usize)->Color {
-        return self.pallette[num];
-    }
-}
-
-//~~~~~~~~~~~~~~Weighted Random~~~~~~~~~~~~~~~~~~~~~~
-
-
-pub struct WeightedRandScheme {
-    pallette: Pallette
-}
-
-//~~~~~~~~~~~~~~Iterated~~~~~~~~~~~~~~~~~~~~~~
-
-pub struct IteratedScheme {
+pub struct ColorScheme {
     idx: usize,
-    pallette: Pallette
+    start_idx: usize,
+    pallette: Box<Vec<Color>>
 }
 
-impl IteratedScheme {
-    pub fn new(pallette: Pallette)->IteratedScheme {
-        return IteratedScheme{idx: pallette.len() + 1, pallette};
+impl ColorScheme {
+    pub fn new(pallette: Pallette)->ColorScheme {
+        ColorScheme{idx: 0, start_idx: 0, pallette: Box::new(pallette)}
     }
-}
 
-impl ColorScheme for IteratedScheme {
-    fn get_next_color(&mut self)->Color {
+    pub fn randomize(pallette: Pallette)->ColorScheme {
+        let scheme = Self::new(pallette);
+        scheme.get_num_color(rand::random::<usize>() % scheme.pallette.len());
+
+        return scheme;
+    }
+
+    pub fn rotate_start(&mut self) {
+        self.rotate_start_by(1);
+    }
+
+    pub fn rotate_start_by(&mut self, count: usize) {
+        self.start_idx = (self.start_idx + 1) % self.pallette.len();
+    }
+
+    pub fn reset_to_start(&mut self) {
+        self.idx = self.start_idx;
+    }
+
+    pub fn set_start_default(&mut self) {
+        self.start_idx = 0;
+    }
+
+    pub fn get_next_color(&mut self)->Color {
+        let next = self.get_num_color(self.idx);
         self.idx = (self.idx + 1) % self.pallette.len();
-        return self.get_num_color(self.idx);
+        return next;
     }
 
-    fn get_num_color(&self, num: usize)->Color {
-        return self.pallette[num];
+    pub fn get_num_color(&self, num: usize)->Color {
+        self.pallette[num]
     }
-}
-
-pub struct SimilarityScheme {
-
 }
