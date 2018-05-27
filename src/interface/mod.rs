@@ -13,6 +13,7 @@ use DECALS_base::support::alert;
 use DECALS_base::support::alert::Alert;
 use DECALS_base::Network;
 use DECALS_base::event::Event;
+use DECALS_base::data::{DataReference};
 
 use super::color::ColorScheme;
 use super::color::colors;
@@ -54,13 +55,15 @@ pub struct InterfaceState {
     top_container: Container,
     bottom_container: Container,
     console: Console,
-    alert_status: Alert,
+    alert_status: DataReference,
     network: Arc<Network>,
     num_devices: usize,
 }
 
 impl InterfaceState {
     pub fn new(logo: conrod::image::Id, ui: &mut Ui, net: Arc<Network>)-> InterfaceState {
+
+        let dm = net.get_data_manager();
 
         let vm_btn_handler = |btn: usize| {
             match btn {
@@ -71,12 +74,12 @@ impl InterfaceState {
         let vm_labels = VM_LABELS.to_vec().iter().map(|s| s.to_string()).collect();
 
         let interface = InterfaceState{root_ids: InterfaceRootIDs::new(ui.widget_id_generator()),
-            alert_status: Alert::Normal,
-            bcp_state: BasicControlsPanel::new(logo, ui.widget_id_generator()),
+            alert_status: dm.get_reference(&alert::ALERT_KEY.to_string()),
+            bcp_state: BasicControlsPanel::new(logo, ui.widget_id_generator(), &dm),
             vm_state: VerticalMenu::new(ui, VM_NUM_BTNS, vm_labels, Box::new(vm_btn_handler)),
             vm_cs: get_colorscheme(Alert::Normal),
-            bottom_container: Container::new(ui, 2, true, false),
-            top_container: Container::new(ui, 6, false, true),
+            bottom_container: Container::new(ui, 2, true, false, &dm),
+            top_container: Container::new(ui, 6, false, true, &dm),
             console: Console::new(ui.widget_id_generator()),
             network: net,
             num_devices: 1};
@@ -96,18 +99,13 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
         let rec = interface.network.event_receiver.lock().unwrap();
         loop {
             match rec.try_recv() {
-                Ok(Event::DataChange(dp))=>match dp.key.as_ref() {
-                    alert::ALERT_KEY=>{
-                        interface.alert_status = alert::get_alert_from_text(dp.value);
-                        interface.vm_cs = get_colorscheme(interface.alert_status);
-                    },
-                    _=>{}
-                },
                 Ok(Event::UnitDiscovered(_))=>interface.num_devices = interface.network.get_num_devices(),
-                Err(_)=>break
+                Err(_)=>break,
+                _=>{}
             }
         }
     }
+
 
     // ROot canvas
     Canvas::new()
@@ -116,12 +114,16 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
         .set(interface.root_ids.canvas, ui);
 
     // Basic Controls panel
-    interface.bcp_state.build(ui, interface.alert_status, &interface.network, Canvas::new()
+    interface.bcp_state.build(ui, &interface.network, Canvas::new()
         .kid_area_h_of(interface.root_ids.canvas)
         .top_left_of(interface.root_ids.canvas));
 
     // Vertical Menu
-    interface.vm_cs.reset_to_start();
+    if interface.alert_status.test_changed() {
+        interface.vm_cs = get_colorscheme(alert::get_alert_from_text(interface.alert_status.get_value()));
+    } else {
+        interface.vm_cs.reset_to_start();
+    }
 
     interface.vm_state.build(ui, &mut interface.vm_cs,
         Canvas::new().parent(interface.root_ids.canvas)
@@ -138,12 +140,12 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
     let top_height = 2.0 * window[1] / 3.0;
     let bottom_height = window[1] - top_height - MARGIN;
 
-    let bottom_child_canvas = interface.bottom_container.build(ui, interface.alert_status,
+    let bottom_child_canvas = interface.bottom_container.build(ui,
         Canvas::new().parent(interface.root_ids.canvas)
             .wh([width, bottom_height])
             .bottom_right_of(interface.root_ids.canvas));
 
-    let top_child_canvas = interface.top_container.build(ui, interface.alert_status,
+    let top_child_canvas = interface.top_container.build(ui,
         Canvas::new().parent(interface.root_ids.canvas)
             .wh([width, top_height])
             .top_right_of(interface.root_ids.canvas));

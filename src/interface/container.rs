@@ -2,7 +2,9 @@
 
 extern crate rand;
 
+use DECALS_base::support::alert;
 use DECALS_base::support::alert::Alert;
+use DECALS_base::data::{DataManager, DataReference};
 
 use super::vertical_menu::VerticalMenu;
 use super::super::color::ColorScheme;
@@ -33,17 +35,17 @@ pub struct Container {
     vert_menu: VerticalMenu,
     top_border: bool,
     bottom_border: bool,
-    last_alert: Alert,
+    alert_status: DataReference,
     cscheme: ColorScheme,
     ticks: u32
 }
 
 impl Container {
-    pub fn new(ui: &mut Ui, num_btns: usize, top_border: bool, bottom_border: bool)-> Container {
+    pub fn new(ui: &mut Ui, num_btns: usize, top_border: bool, bottom_border: bool, dm: &DataManager)-> Container {
 
         let mut vm_labels: Vec<String> = Vec::new();
 
-        for i in 0..num_btns {
+        for _ in 0..num_btns {
             vm_labels.push(String::new());
         }
 
@@ -53,29 +55,31 @@ impl Container {
             }
         };
 
+        let alert_status = dm.get_reference(&alert::ALERT_KEY.to_string());
+
 
         Container{ids: ContainerIDs::new(ui.widget_id_generator()),
             vert_menu: VerticalMenu::new(ui, num_btns, vm_labels, Box::new(vm_btn_handler)),
             top_border, bottom_border,
-            cscheme: ColorScheme::new(colors::NO_ALERT.to_vec()),
-            last_alert: Alert::Normal,
+            cscheme: super::get_colorscheme(alert::get_alert_from_text(alert_status.get_value())),
+            alert_status,
             ticks: 0}
     }
 
 
 
-    pub fn build(&mut self, ui: &mut UiCell, alert_status: Alert, base_canvas: Canvas)-> Canvas {
+    pub fn build(&mut self, ui: &mut UiCell, base_canvas: Canvas)-> Canvas {
 
-        if alert_status != self.last_alert {
-            self.last_alert = alert_status;
-            self.cscheme = super::get_colorscheme(alert_status);
+        let curr_alert = alert::get_alert_from_text(self.alert_status.get_value());
+        if  self.alert_status.test_changed() {
+            self.cscheme = super::get_colorscheme(curr_alert);
             self.ticks = 0;
         } else {
             self.cscheme.reset_to_start();
         }
 
 
-        if alert_status != Alert::Normal {
+        if curr_alert != Alert::Normal {
             self.ticks = (self.ticks + 1) % ANIMATION_FREQ;
 
             if self.ticks == ANIMATION_FREQ - 1 {

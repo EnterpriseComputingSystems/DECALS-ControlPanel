@@ -7,6 +7,7 @@ use std::sync::Arc;
 use DECALS_base::support::alert;
 use DECALS_base::support::alert::Alert;
 use DECALS_base::Network;
+use DECALS_base::data::{DataManager, DataReference};
 
 use conrod;
 use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget};
@@ -15,9 +16,6 @@ use conrod::widget::id::Generator;
 use conrod::widget::primitive::text::Text;
 
 use super::super::DECALS_widgets::rounded_button::RoundedButton;
-use super::super::color::ColorScheme;
-use super::super::color::colors;
-use super::super::color::colors::{Color, Pallette};
 
 widget_ids! {
     pub struct BasicControlsPanelIds {
@@ -68,14 +66,15 @@ widget_ids! {
 pub struct BasicControlsPanel {
     logo: conrod::image::Id,
     pub ids: BasicControlsPanelIds,
+    alert_status: DataReference
 }
 
 impl BasicControlsPanel {
-    pub fn new(logo: conrod::image::Id, idgen: Generator)-> BasicControlsPanel {
-        BasicControlsPanel{logo, ids: BasicControlsPanelIds::new(idgen)}
+    pub fn new(logo: conrod::image::Id, idgen: Generator, dm: &DataManager)-> BasicControlsPanel {
+        BasicControlsPanel{logo, ids: BasicControlsPanelIds::new(idgen), alert_status: dm.get_reference(&alert::ALERT_KEY.to_string())}
     }
 
-    pub fn build(&mut self, ui: &mut conrod::UiCell, alert_status: Alert, network: &Arc<Network>, base_canvas: Canvas) {
+    pub fn build(&mut self, ui: &mut conrod::UiCell, network: &Arc<Network>, base_canvas: Canvas) {
 
         const MARGIN: conrod::Scalar = 15.0;
         const BTN_GAP: conrod::Scalar = 2.0;
@@ -97,7 +96,7 @@ impl BasicControlsPanel {
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Alert buttons
 
-        let mut cscheme = super::get_colorscheme(alert_status);
+        let mut cscheme = super::get_colorscheme(alert::get_alert_from_text(self.alert_status.get_value()));
 
         widget::Canvas::new()
         .down(MARGIN)
@@ -128,7 +127,7 @@ impl BasicControlsPanel {
             .w_h(150.0, 70.0)
             .set(self.ids.alert_2_1, ui)
             {
-                Network::change_data_value(&network, alert::ALERT_KEY.to_string(), alert::get_alert_text(Alert::Normal).to_string());
+                self.alert_status.update_data(alert::get_alert_text(Alert::Normal).to_string());
             }
 
         for _press in RoundedButton::rounded_left(BTN_RADIUS)
@@ -147,7 +146,7 @@ impl BasicControlsPanel {
             .w_h(150.0, 70.0)
             .set(self.ids.alert_2_2, ui)
             {
-                Network::change_data_value(&network, alert::ALERT_KEY.to_string(), alert::get_alert_text(Alert::Blue).to_string());
+                self.alert_status.update_data(alert::get_alert_text(Alert::Blue).to_string());
             }
 
         for _press in RoundedButton::rounded_left(BTN_RADIUS)
@@ -166,7 +165,7 @@ impl BasicControlsPanel {
             .w_h(150.0, 70.0)
             .set(self.ids.alert_2_3, ui)
             {
-                Network::change_data_value(&network, alert::ALERT_KEY.to_string(), alert::get_alert_text(Alert::Yellow).to_string());
+                self.alert_status.update_data(alert::get_alert_text(Alert::Yellow).to_string());
             }
 
         for _press in RoundedButton::rounded_left(BTN_RADIUS)
@@ -185,7 +184,7 @@ impl BasicControlsPanel {
             .w_h(150.0, 70.0)
             .set(self.ids.alert_2_4, ui)
             {
-                Network::change_data_value(&network, alert::ALERT_KEY.to_string(), alert::get_alert_text(Alert::Red).to_string());
+                self.alert_status.update_data(alert::get_alert_text(Alert::Red).to_string());
             }
 
         let status = format!("Discovered devices: {}\nDevice id: {}\nDevice IP: {}\nDevice port: {}",

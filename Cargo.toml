@@ -5,6 +5,7 @@ authors = ["Francesco Macagno <fjmacagno1@yahoo.com>", "Carly Robison <carlyelle
 
 [dependencies]
 DECALS-base = {git = "https://github.com/EnterpriseComputingSystems/DECALS-base"}
+# DECALS-base = {path = "../DECALS-base"}
 piston_window = "0.75.0"
 conrod = { version = "0.58", features = ["piston"] }
 conrod_derive = "0.1.0"
