@@ -124,7 +124,7 @@ impl Container {
         }
 
         Canvas::new().parent(self.ids.canvas)
-            .bottom_right_of(self.ids.canvas)
+            .mid_right_of(self.ids.canvas)
             .wh([base_dim[0] - VERT_MENU_WIDTH - CHILD_MARGIN, base_dim[1] - BORDER_RECT_WIDTH - CHILD_MARGIN])
 
     }
