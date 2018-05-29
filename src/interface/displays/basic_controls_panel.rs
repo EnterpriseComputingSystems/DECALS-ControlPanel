@@ -15,6 +15,7 @@ use conrod::widget::{Canvas};
 use conrod::widget::id::Generator;
 use conrod::widget::primitive::text::Text;
 
+use super::Display;
 use super::super::widgets::rounded_button::RoundedButton;
 use super::super::color;
 
@@ -67,15 +68,21 @@ widget_ids! {
 pub struct BasicControlsPanel {
     logo: conrod::image::Id,
     pub ids: BasicControlsPanelIds,
-    alert_status: DataReference
+    alert_status: DataReference,
+    network: Arc<Network>
 }
 
 impl BasicControlsPanel {
-    pub fn new(logo: conrod::image::Id, idgen: Generator, dm: &DataManager)-> BasicControlsPanel {
-        BasicControlsPanel{logo, ids: BasicControlsPanelIds::new(idgen), alert_status: dm.get_reference(&alert::ALERT_KEY.to_string())}
+    pub fn new(logo: conrod::image::Id, idgen: Generator, network: Arc<Network>, dm: &DataManager)-> BasicControlsPanel {
+        BasicControlsPanel{logo,
+            ids: BasicControlsPanelIds::new(idgen),
+            alert_status: dm.get_reference(&alert::ALERT_KEY.to_string()),
+            network}
     }
+}
 
-    pub fn build(&mut self, ui: &mut conrod::UiCell, network: &Arc<Network>, base_canvas: Canvas) {
+impl Display for BasicControlsPanel {
+    fn build(&mut self, ui: &mut conrod::UiCell, base_canvas: Canvas) {
 
         const MARGIN: conrod::Scalar = 15.0;
         const BTN_GAP: conrod::Scalar = 2.0;
@@ -189,10 +196,10 @@ impl BasicControlsPanel {
             }
 
         let status = format!("Discovered devices: {}\nDevice id: {}\nDevice IP: {}\nDevice port: {}",
-                            network.get_num_devices(),
-                            network.get_id(),
-                            network.get_ip(),
-                            network.get_port());
+                            self.network.get_num_devices(),
+                            self.network.get_id(),
+                            self.network.get_ip(),
+                            self.network.get_port());
 
         Text::new(&status).parent(self.ids.canvas)
             .down_from(self.ids.alert_canvas, MARGIN)

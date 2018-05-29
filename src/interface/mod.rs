@@ -24,7 +24,8 @@ use conrod::widget::Canvas;
 
 use self::color::ColorScheme;
 use self::components::vertical_menu::VerticalMenu;
-use self::components::container::Container;
+use self::displays::Display;
+use self::displays::full_image::FullImage;
 use self::displays::basic_controls_panel::BasicControlsPanel;
 use self::displays::console::Console;
 
@@ -49,16 +50,15 @@ pub struct InterfaceState {
     bcp_state: BasicControlsPanel,
     vm_state: VerticalMenu,
     vm_cs: ColorScheme,
-    top_container: Container,
-    bottom_container: Container,
     console: Console,
+    fullimg: FullImage,
     alert_status: DataReference,
     network: Arc<Network>,
     num_devices: usize,
 }
 
 impl InterfaceState {
-    pub fn new(logo: conrod::image::Id, ui: &mut Ui, net: Arc<Network>)-> InterfaceState {
+    pub fn new(logo: conrod::image::Id, full_image: conrod::image::Id, ui: &mut Ui, net: Arc<Network>)-> InterfaceState {
 
         let dm = net.get_data_manager();
 
@@ -72,12 +72,11 @@ impl InterfaceState {
 
         let interface = InterfaceState{root_ids: InterfaceRootIDs::new(ui.widget_id_generator()),
             alert_status: dm.get_reference(&alert::ALERT_KEY.to_string()),
-            bcp_state: BasicControlsPanel::new(logo, ui.widget_id_generator(), &dm),
+            bcp_state: BasicControlsPanel::new(logo, ui.widget_id_generator(), net.clone(), &dm),
             vm_state: VerticalMenu::new(ui, VM_NUM_BTNS, vm_labels, Box::new(vm_btn_handler)),
             vm_cs: color::get_suggested_colorscheme(Alert::Normal),
-            bottom_container: Container::new(ui, 2, true, false, &dm),
-            top_container: Container::new(ui, 6, false, true, &dm),
-            console: Console::new(ui.widget_id_generator()),
+            console: Console::new(ui, &dm, true, false),
+            fullimg: FullImage::new(ui, &dm, false, true, full_image),
             network: net,
             num_devices: 1};
 
@@ -111,7 +110,7 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
         .set(interface.root_ids.canvas, ui);
 
     // Basic Controls panel
-    interface.bcp_state.build(ui, &interface.network, Canvas::new()
+    interface.bcp_state.build(ui, Canvas::new()
         .kid_area_h_of(interface.root_ids.canvas)
         .top_left_of(interface.root_ids.canvas));
 
@@ -137,18 +136,15 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
     let top_height = 2.0 * window[1] / 3.0;
     let bottom_height = window[1] - top_height - MARGIN;
 
-    let bottom_child_canvas = interface.bottom_container.build(ui,
-        Canvas::new().parent(interface.root_ids.canvas)
-            .wh([width, bottom_height])
-            .bottom_right_of(interface.root_ids.canvas));
-
-    let top_child_canvas = interface.top_container.build(ui,
+    interface.fullimg.build(ui,
         Canvas::new().parent(interface.root_ids.canvas)
             .wh([width, top_height])
             .top_right_of(interface.root_ids.canvas));
 
 
     // Console
-    interface.console.build(ui, bottom_child_canvas);
+    interface.console.build(ui, Canvas::new().parent(interface.root_ids.canvas)
+        .wh([width, bottom_height])
+        .bottom_right_of(interface.root_ids.canvas));
 
 }

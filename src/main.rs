@@ -93,12 +93,22 @@ mod feature {
             Texture::from_path(factory, &path, Flip::None, &settings).unwrap()
         };
 
+        let full_image: G2dTexture = {
+            let assets = find_folder::Search::ParentsThenKids(3, 3).for_folder("assets").unwrap();
+            let path = assets.join("images/voy.png");
+            let factory = &mut window.factory;
+            let settings = TextureSettings::new();
+            Texture::from_path(factory, &path, Flip::None, &settings).unwrap()
+        };
+
         // Create our `conrod::image::Map` which describes each of our widget->image mappings.
         // In our case we only have one image, however the macro may be used to list multiple.
         let mut image_map = conrod::image::Map::new();
         let logo = image_map.insert(logo);
+        let full_image = image_map.insert(full_image);
 
-        let mut decals_interface = InterfaceState::new(logo, &mut ui, network.clone());
+
+        let mut decals_interface = InterfaceState::new(logo, full_image, &mut ui, network.clone());
 
         // Poll events from the window.
         while let Some(event) = window.next() {

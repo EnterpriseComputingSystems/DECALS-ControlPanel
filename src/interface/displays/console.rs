@@ -3,15 +3,22 @@
 use std::collections::LinkedList;
 use std::sync::{Arc, Mutex};
 
-use conrod::{Positionable, Widget, UiCell};
+use conrod::{Positionable, Widget, UiCell, Ui};
 use conrod::widget::Canvas;
-use conrod::widget::id::Generator;
 use conrod::widget::primitive::text::Text;
 
 use log;
 use log::{Record, Level, Metadata};
 
-const MAX_LINES: usize = 12;
+use DECALS_base::data::DataManager;
+
+use super::Display;
+use super::super::components::container::Container;
+
+const MAX_LINES: usize = 10;
+
+const CONT_BTNS: usize = 2;
+const CONT_BTN_LABELS: [&str; 2] = ["Up", "Down"];
 
 
 widget_ids! {
@@ -24,22 +31,41 @@ widget_ids! {
 
 pub struct Console {
     ids: ConsoleIDs,
+    container: Container,
     txt: Arc<Mutex<LinkedList<String>>>
 
 }
 
 impl Console {
-    pub fn new(id_gen: Generator)-> Console {
-        Console{ids: ConsoleIDs::new(id_gen),
+    pub fn new(ui: &mut Ui, dm: &DataManager, top_border: bool, bottom_border: bool)-> Console {
+
+        let labels = CONT_BTN_LABELS.to_vec().iter().map(|s| s.to_string()).collect();
+
+        let ct_btn_handler = |btn: usize| {
+            match btn {
+                _=>()
+            }
+        };
+
+        Console{ids: ConsoleIDs::new(ui.widget_id_generator()),
+                container: Container::new(ui, CONT_BTNS, top_border, bottom_border, dm, labels, Box::new(ct_btn_handler)),
                 txt: Arc::new(Mutex::new(LinkedList::new()))}
     }
 
+    // Initialize logger aspect
+    pub fn init_logging(&self) -> Result<(), log::SetLoggerError> {
+        log::set_max_level(Level::Trace.to_level_filter());
+        log::set_boxed_logger(Box::new(ConsoleLogger{txt: self.txt.clone()}))
+    }
 
+}
 
-    pub fn build(&self, ui: &mut UiCell, base_canvas: Canvas) {
+impl Display for Console {
 
+    fn build(&mut self, ui: &mut UiCell, base_canvas: Canvas) {
 
-        base_canvas.set(self.ids.canvas, ui);
+        let sub_canvas = self.container.build(ui, base_canvas);
+        sub_canvas.set(self.ids.canvas, ui);
 
         let mut txt_out = String::new();
         for t in self.txt.lock().unwrap().iter() {
@@ -50,17 +76,7 @@ impl Console {
         Text::new(&txt_out).parent(self.ids.canvas)
                 .top_left_of(self.ids.canvas)
                 .set(self.ids.text, ui);
-
-
-
     }
-
-    // Initialize logger aspect
-    pub fn init_logging(&self) -> Result<(), log::SetLoggerError> {
-        log::set_max_level(Level::Trace.to_level_filter());
-        log::set_boxed_logger(Box::new(ConsoleLogger{txt: self.txt.clone()}))
-    }
-
 }
 
 // Logs information to the consoloe and to stdout

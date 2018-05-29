@@ -41,25 +41,15 @@ pub struct Container {
 }
 
 impl Container {
-    pub fn new(ui: &mut Ui, num_btns: usize, top_border: bool, bottom_border: bool, dm: &DataManager)-> Container {
-
-        let mut vm_labels: Vec<String> = Vec::new();
-
-        for _ in 0..num_btns {
-            vm_labels.push(String::new());
-        }
-
-        let vm_btn_handler = |btn: usize| {
-            match btn {
-                _=>()
-            }
-        };
+    pub fn new(ui: &mut Ui, num_btns: usize, top_border: bool, bottom_border: bool, dm: &DataManager, vm_labels: Vec<String>, btn_handler: Box<Fn(usize)>)-> Container {
 
         let alert_status = dm.get_reference(&alert::ALERT_KEY.to_string());
 
+        assert!(num_btns == vm_labels.len());
+
 
         Container{ids: ContainerIDs::new(ui.widget_id_generator()),
-            vert_menu: VerticalMenu::new(ui, num_btns, vm_labels, Box::new(vm_btn_handler)),
+            vert_menu: VerticalMenu::new(ui, num_btns, vm_labels, btn_handler),
             top_border, bottom_border,
             cscheme: color::get_suggested_colorscheme(alert::get_alert_from_text(alert_status.get_value())),
             alert_status,
