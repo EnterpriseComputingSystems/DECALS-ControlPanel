@@ -8,10 +8,7 @@ extern crate find_folder;
 extern crate piston_window;
 #[macro_use]
 extern crate log;
-extern crate simple_logger;
 mod interface;
-mod color;
-mod DECALS_widgets;
 
 
 

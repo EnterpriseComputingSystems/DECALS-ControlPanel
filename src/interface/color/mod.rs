@@ -3,9 +3,12 @@ pub mod colors;
 
 use rand;
 
+use std::boxed::Box;
+
+use DECALS_base::support::alert::Alert;
+
 use self::colors::{Color, Pallette};
 
-use std::boxed::Box;
 
 pub struct ColorScheme {
     idx: usize,
@@ -50,4 +53,15 @@ impl ColorScheme {
     pub fn get_num_color(&self, num: usize)->Color {
         self.pallette[num]
     }
+}
+
+pub fn get_suggested_colorscheme(al: Alert) ->ColorScheme {
+    match al {
+        Alert::Normal=> ColorScheme::new(colors::NO_ALERT.to_vec()),
+        Alert::Yellow=> ColorScheme::new(colors::YELLOW_ALERT.to_vec()),
+        Alert::Blue=> ColorScheme::new(colors::BLUE_ALERT.to_vec()),
+        Alert::Black=> ColorScheme::new(colors::BLUE_ALERT.to_vec()),
+        Alert::Red=> ColorScheme::new(colors::RED_ALERT.to_vec())
+    }
+
 }

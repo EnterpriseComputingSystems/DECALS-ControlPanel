@@ -1,12 +1,8 @@
+mod components;
+mod displays;
+mod widgets;
+mod color;
 
-
-mod basic_controls_panel;
-mod vertical_menu;
-mod container;
-mod console;
-
-use conrod;
-use conrod::{Ui, UiCell};
 
 
 use DECALS_base::support::alert;
@@ -15,21 +11,22 @@ use DECALS_base::Network;
 use DECALS_base::event::Event;
 use DECALS_base::data::{DataReference};
 
-use super::color::ColorScheme;
-use super::color::colors;
+
 
 
 use std::sync::{Arc};
 
 
-use conrod::{Colorable, Positionable, Sizeable, Widget, Scalar};
+use conrod;
+use conrod::{Ui, UiCell, Colorable, Positionable, Sizeable, Widget, Scalar};
 use conrod::widget::Canvas;
 
 
-use self::basic_controls_panel::BasicControlsPanel;
-use self::vertical_menu::VerticalMenu;
-use self::container::Container;
-use self::console::Console;
+use self::color::ColorScheme;
+use self::components::vertical_menu::VerticalMenu;
+use self::components::container::Container;
+use self::displays::basic_controls_panel::BasicControlsPanel;
+use self::displays::console::Console;
 
 const MARGIN: Scalar = 5.0;
 const PADDING: Scalar = 10.0;
@@ -77,7 +74,7 @@ impl InterfaceState {
             alert_status: dm.get_reference(&alert::ALERT_KEY.to_string()),
             bcp_state: BasicControlsPanel::new(logo, ui.widget_id_generator(), &dm),
             vm_state: VerticalMenu::new(ui, VM_NUM_BTNS, vm_labels, Box::new(vm_btn_handler)),
-            vm_cs: get_colorscheme(Alert::Normal),
+            vm_cs: color::get_suggested_colorscheme(Alert::Normal),
             bottom_container: Container::new(ui, 2, true, false, &dm),
             top_container: Container::new(ui, 6, false, true, &dm),
             console: Console::new(ui.widget_id_generator()),
@@ -120,7 +117,7 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
 
     // Vertical Menu
     if interface.alert_status.test_changed() {
-        interface.vm_cs = get_colorscheme(alert::get_alert_from_text(interface.alert_status.get_value()));
+        interface.vm_cs = color::get_suggested_colorscheme(alert::get_alert_from_text(interface.alert_status.get_value()));
     } else {
         interface.vm_cs.reset_to_start();
     }
@@ -153,16 +150,5 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
 
     // Console
     interface.console.build(ui, bottom_child_canvas);
-
-}
-
-pub fn get_colorscheme(al: Alert) ->ColorScheme {
-    match al {
-        Alert::Normal=> ColorScheme::new(colors::NO_ALERT.to_vec()),
-        Alert::Yellow=> ColorScheme::new(colors::YELLOW_ALERT.to_vec()),
-        Alert::Blue=> ColorScheme::new(colors::BLUE_ALERT.to_vec()),
-        Alert::Black=> ColorScheme::new(colors::BLUE_ALERT.to_vec()),
-        Alert::Red=> ColorScheme::new(colors::RED_ALERT.to_vec())
-    }
 
 }

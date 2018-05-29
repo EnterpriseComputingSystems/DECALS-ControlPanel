@@ -1,7 +1,7 @@
 extern crate rand;
 
 use super::super::color::ColorScheme;
-use super::super::DECALS_widgets::rounded_button::RoundedButton;
+use super::super::widgets::rounded_button::RoundedButton;
 
 use conrod::{Colorable, Labelable, Positionable, Sizeable, Widget, UiCell, Scalar, Ui};
 use conrod::widget::Canvas;

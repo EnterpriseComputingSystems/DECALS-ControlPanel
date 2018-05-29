@@ -15,7 +15,8 @@ use conrod::widget::{Canvas};
 use conrod::widget::id::Generator;
 use conrod::widget::primitive::text::Text;
 
-use super::super::DECALS_widgets::rounded_button::RoundedButton;
+use super::super::widgets::rounded_button::RoundedButton;
+use super::super::color;
 
 widget_ids! {
     pub struct BasicControlsPanelIds {
@@ -96,7 +97,7 @@ impl BasicControlsPanel {
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Alert buttons
 
-        let mut cscheme = super::get_colorscheme(alert::get_alert_from_text(self.alert_status.get_value()));
+        let mut cscheme = color::get_suggested_colorscheme(alert::get_alert_from_text(self.alert_status.get_value()));
 
         widget::Canvas::new()
         .down(MARGIN)

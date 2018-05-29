@@ -7,8 +7,8 @@ use DECALS_base::support::alert::Alert;
 use DECALS_base::data::{DataManager, DataReference};
 
 use super::vertical_menu::VerticalMenu;
+use super::super::color;
 use super::super::color::ColorScheme;
-use super::super::color::colors;
 
 use conrod::{Positionable, Sizeable, Widget, UiCell, Scalar, Ui};
 use conrod::widget::Canvas;
@@ -61,7 +61,7 @@ impl Container {
         Container{ids: ContainerIDs::new(ui.widget_id_generator()),
             vert_menu: VerticalMenu::new(ui, num_btns, vm_labels, Box::new(vm_btn_handler)),
             top_border, bottom_border,
-            cscheme: super::get_colorscheme(alert::get_alert_from_text(alert_status.get_value())),
+            cscheme: color::get_suggested_colorscheme(alert::get_alert_from_text(alert_status.get_value())),
             alert_status,
             ticks: 0}
     }
@@ -72,7 +72,7 @@ impl Container {
 
         let curr_alert = alert::get_alert_from_text(self.alert_status.get_value());
         if  self.alert_status.test_changed() {
-            self.cscheme = super::get_colorscheme(curr_alert);
+            self.cscheme = color::get_suggested_colorscheme(curr_alert);
             self.ticks = 0;
         } else {
             self.cscheme.reset_to_start();
