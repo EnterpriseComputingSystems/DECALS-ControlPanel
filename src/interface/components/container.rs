@@ -41,7 +41,7 @@ pub struct Container {
 }
 
 impl Container {
-    pub fn new(ui: &mut Ui, num_btns: usize, top_border: bool, bottom_border: bool, dm: &DataManager, vm_labels: Vec<String>, btn_handler: Box<Fn(usize)>)-> Container {
+    pub fn new(ui: &mut Ui, num_btns: usize, top_border: bool, bottom_border: bool, dm: &DataManager, vm_labels: Vec<String>, btn_handler: Box<Fn(usize, &mut UiCell)>)-> Container {
 
         let alert_status = dm.get_reference(&alert::ALERT_KEY.to_string());
 

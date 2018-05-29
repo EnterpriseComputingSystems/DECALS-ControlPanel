@@ -3,7 +3,7 @@
 use std::collections::LinkedList;
 use std::sync::{Arc, Mutex};
 
-use conrod::{Positionable, Widget, UiCell, Ui};
+use conrod::{Positionable, Sizeable, Widget, UiCell, Ui};
 use conrod::widget::Canvas;
 use conrod::widget::primitive::text::Text;
 
@@ -15,7 +15,7 @@ use DECALS_base::data::DataManager;
 use super::Display;
 use super::super::components::container::Container;
 
-const MAX_LINES: usize = 10;
+const MAX_LINES: usize = 30;
 
 const CONT_BTNS: usize = 2;
 const CONT_BTN_LABELS: [&str; 2] = ["Up", "Down"];
@@ -41,13 +41,18 @@ impl Console {
 
         let labels = CONT_BTN_LABELS.to_vec().iter().map(|s| s.to_string()).collect();
 
-        let ct_btn_handler = |btn: usize| {
+        let ids = ConsoleIDs::new(ui.widget_id_generator());
+
+        let canvasid = ids.canvas;
+        let ct_btn_handler = move |btn: usize, ui: &mut UiCell| {
             match btn {
+                0=>ui.scroll_widget(canvasid, [0.0, 5.0]),
+                1=>ui.scroll_widget(canvasid, [0.0, -5.0]),
                 _=>()
             }
         };
 
-        Console{ids: ConsoleIDs::new(ui.widget_id_generator()),
+        Console{ids,
                 container: Container::new(ui, CONT_BTNS, top_border, bottom_border, dm, labels, Box::new(ct_btn_handler)),
                 txt: Arc::new(Mutex::new(LinkedList::new()))}
     }
@@ -65,7 +70,8 @@ impl Display for Console {
     fn build(&mut self, ui: &mut UiCell, base_canvas: Canvas) {
 
         let sub_canvas = self.container.build(ui, base_canvas);
-        sub_canvas.set(self.ids.canvas, ui);
+        sub_canvas.scroll_kids_vertically()
+            .set(self.ids.canvas, ui);
 
         let mut txt_out = String::new();
         for t in self.txt.lock().unwrap().iter() {
@@ -74,6 +80,7 @@ impl Display for Console {
         }
 
         Text::new(&txt_out).parent(self.ids.canvas)
+                .h(200.0)
                 .top_left_of(self.ids.canvas)
                 .set(self.ids.text, ui);
     }

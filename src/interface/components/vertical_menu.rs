@@ -21,11 +21,11 @@ pub struct VerticalMenu {
     ids: VerticalMenuIDs,
     num_btns: usize,
     labels: Vec<String>,
-    click_handler: Box<Fn(usize)>
+    click_handler: Box<Fn(usize, &mut UiCell)>
 }
 
 impl VerticalMenu {
-    pub fn new(ui: &mut Ui, num_btns: usize, labels: Vec<String>, click_handler: Box<Fn(usize)>)-> VerticalMenu {
+    pub fn new(ui: &mut Ui, num_btns: usize, labels: Vec<String>, click_handler: Box<Fn(usize, &mut UiCell)>)-> VerticalMenu {
 
         assert!(num_btns >= 1);
         assert!(labels.len() == num_btns);
@@ -64,7 +64,7 @@ impl VerticalMenu {
 
             // Handle button presses
             for _press in next_btn.set(self.ids.btns[i], ui) {
-                (self.click_handler)(i);
+                (self.click_handler)(i, ui);
             }
         }
 

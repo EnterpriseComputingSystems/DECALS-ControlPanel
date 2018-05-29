@@ -32,7 +32,7 @@ impl FullImage {
 
         FullImage{ids: FullImageIDs::new(ui.widget_id_generator()),
                 image,
-                container: Container::new(ui, CONT_BTNS, top_border, bottom_border, dm, labels, Box::new(|_| {}))}
+                container: Container::new(ui, CONT_BTNS, top_border, bottom_border, dm, labels, Box::new(|_, _| {}))}
     }
 
 }

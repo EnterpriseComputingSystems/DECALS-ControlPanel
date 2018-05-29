@@ -62,7 +62,7 @@ impl InterfaceState {
 
         let dm = net.get_data_manager();
 
-        let vm_btn_handler = |btn: usize| {
+        let vm_btn_handler = |btn: usize, _: &mut UiCell| {
             match btn {
                 _=>()
             }
