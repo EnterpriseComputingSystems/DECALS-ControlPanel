@@ -10,6 +10,8 @@ use conrod::widget::primitive::text::Text;
 use log;
 use log::{Record, Level, Metadata};
 
+use time;
+
 use DECALS_base::data::DataManager;
 
 use super::Display;
@@ -46,8 +48,8 @@ impl Console {
         let canvasid = ids.canvas;
         let ct_btn_handler = move |btn: usize, ui: &mut UiCell| {
             match btn {
-                0=>ui.scroll_widget(canvasid, [0.0, 5.0]),
-                1=>ui.scroll_widget(canvasid, [0.0, -5.0]),
+                0=>ui.scroll_widget(canvasid, [0.0, 50.0]),
+                1=>ui.scroll_widget(canvasid, [0.0, -50.0]),
                 _=>()
             }
         };
@@ -80,7 +82,7 @@ impl Display for Console {
         }
 
         Text::new(&txt_out).parent(self.ids.canvas)
-                .h(200.0)
+                .h(500.0)
                 .top_left_of(self.ids.canvas)
                 .set(self.ids.text, ui);
     }
@@ -101,11 +103,11 @@ impl log::Log for ConsoleLogger {
             let mut lst = self.txt.lock().unwrap();
 
             if lst.len() == MAX_LINES {
-                lst.pop_front();
+                lst.pop_back();
             }
 
-            let out = format!("{} - {}", record.level(), record.args());
-            lst.push_back(out.clone());
+            let out = format!("{}: {} - {}", time::strftime("%H-%M-%S", &time::now()).unwrap(), record.level(), record.args());
+            lst.push_front(out.clone());
 
             println!("{}", out);
 
