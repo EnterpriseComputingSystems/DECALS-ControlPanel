@@ -1,5 +1,5 @@
 mod components;
-mod displays;
+mod panels;
 mod widgets;
 mod color;
 
@@ -24,10 +24,10 @@ use conrod::widget::Canvas;
 
 use self::color::ColorScheme;
 use self::components::vertical_menu::VerticalMenu;
-use self::displays::Display;
-use self::displays::full_image::FullImage;
-use self::displays::basic_controls_panel::BasicControlsPanel;
-use self::displays::console::Console;
+use self::panels::Display;
+use self::panels::full_image::FullImage;
+use self::panels::basic_controls_panel::BasicControlsPanel;
+use self::panels::console::Console;
 
 const MARGIN: Scalar = 5.0;
 const PADDING: Scalar = 10.0;
