@@ -52,6 +52,18 @@ impl SettingsPanel {
         return sp;
     }
 
+    pub fn update_settings(&mut self, ui: &mut UiCell, dm: &DataManager, settings_options: &HashMap<String, Vec<String>>) {
+        let mut num_btns = 0;
+        let mut settings: HashMap<String, (Vec<String>, DataReference)> = HashMap::new();
+        for (key, options) in settings_options.iter() {
+            num_btns += options.len() + 1; //include header btn
+            settings.insert(key.clone(), (options.clone(), dm.get_reference(key)));
+        }
+
+        self.ids.settings_canvases.resize(settings.len(), &mut ui.widget_id_generator());
+        self.ids.settings_btns.resize(num_btns, &mut ui.widget_id_generator());
+    }
+
 }
 
 impl Panel for SettingsPanel {
