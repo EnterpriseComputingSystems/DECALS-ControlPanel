@@ -2,6 +2,7 @@
 pub mod console;
 pub mod basic_controls_panel;
 pub mod full_image;
+pub mod settings_panel;
 
 use conrod::{UiCell};
 use conrod::widget::Canvas;
