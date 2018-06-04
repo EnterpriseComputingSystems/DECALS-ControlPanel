@@ -5,7 +5,7 @@ use conrod::widget::{Canvas, Image};
 
 use DECALS_base::data::DataManager;
 
-use super::Display;
+use super::Panel;
 use super::super::components::container::Container;
 
 const CONT_BTNS: usize = 6;
@@ -37,7 +37,7 @@ impl FullImage {
 
 }
 
-impl Display for FullImage {
+impl Panel for FullImage {
 
     fn build(&mut self, ui: &mut UiCell, base_canvas: Canvas) {
 

@@ -15,7 +15,7 @@ use conrod::widget::{Canvas};
 use conrod::widget::id::Generator;
 use conrod::widget::primitive::text::Text;
 
-use super::Display;
+use super::Panel;
 use super::super::widgets::rounded_button::RoundedButton;
 use super::super::color;
 
@@ -81,7 +81,7 @@ impl BasicControlsPanel {
     }
 }
 
-impl Display for BasicControlsPanel {
+impl Panel for BasicControlsPanel {
     fn build(&mut self, ui: &mut conrod::UiCell, base_canvas: Canvas) {
 
         const MARGIN: conrod::Scalar = 15.0;

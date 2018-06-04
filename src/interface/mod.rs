@@ -13,7 +13,7 @@ use DECALS_base::data::{DataReference};
 
 
 
-
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc};
 
 
@@ -24,10 +24,11 @@ use conrod::widget::Canvas;
 
 use self::color::ColorScheme;
 use self::components::vertical_menu::VerticalMenu;
-use self::panels::Display;
+use self::panels::Panel;
 use self::panels::full_image::FullImage;
 use self::panels::basic_controls_panel::BasicControlsPanel;
 use self::panels::console::Console;
+use self::panels::settings_panel::SettingsPanel;
 
 const MARGIN: Scalar = 5.0;
 const PADDING: Scalar = 10.0;
@@ -40,9 +41,17 @@ const VM_LABELS: [&str; 8] = ["", "", "", "", "", "", "", "Settings"];
 widget_ids! {
     pub struct InterfaceRootIDs {
         canvas,
-
-
     }
+}
+
+struct AvailablePanels {
+    large_image: Box<FullImage>,
+    settings_panel: Box<SettingsPanel>
+}
+
+struct InterfaceResources {
+    logo: conrod::image::Id,
+    ship_image_1: conrod::image::Id
 }
 
 pub struct InterfaceState {
@@ -51,33 +60,45 @@ pub struct InterfaceState {
     vm_state: VerticalMenu,
     vm_cs: ColorScheme,
     console: Console,
-    fullimg: FullImage,
+    resources: InterfaceResources,
     alert_status: DataReference,
     network: Arc<Network>,
     num_devices: usize,
+    panel_num: Arc<AtomicUsize>,
+    panels: AvailablePanels,
 }
 
 impl InterfaceState {
-    pub fn new(logo: conrod::image::Id, full_image: conrod::image::Id, ui: &mut Ui, net: Arc<Network>)-> InterfaceState {
+    pub fn new(logo: conrod::image::Id, full_image: conrod::image::Id, ui: &mut Ui, network: Arc<Network>)-> InterfaceState {
 
-        let dm = net.get_data_manager();
+        let panel_num = Arc::new(AtomicUsize::new(0));
 
-        let vm_btn_handler = |btn: usize, _: &mut UiCell| {
-            match btn {
-                _=>()
-            }
+
+        // Vertical menu data
+        let pntmp = panel_num.clone();
+        let vm_btn_handler = move |btn: usize, _: &mut UiCell| {
+            pntmp.store(btn, Ordering::Relaxed);
         };
 
         let vm_labels = VM_LABELS.to_vec().iter().map(|s| s.to_string()).collect();
 
+
+        let resources = InterfaceResources{logo, ship_image_1: full_image};
+
+        let dm = network.get_data_manager();
+        let panels = AvailablePanels{large_image: Box::new(FullImage::new(ui, &dm, false, true, resources.ship_image_1)),
+                                     settings_panel: Box::new(SettingsPanel::new(ui, &dm, false, true, &network.get_common_settings()))};
+
         let interface = InterfaceState{root_ids: InterfaceRootIDs::new(ui.widget_id_generator()),
             alert_status: dm.get_reference(&alert::ALERT_KEY.to_string()),
-            bcp_state: BasicControlsPanel::new(logo, ui.widget_id_generator(), net.clone(), &dm),
+            bcp_state: BasicControlsPanel::new(logo, ui.widget_id_generator(), network.clone(), &dm),
             vm_state: VerticalMenu::new(ui, VM_NUM_BTNS, vm_labels, Box::new(vm_btn_handler)),
             vm_cs: color::get_suggested_colorscheme(Alert::Normal),
             console: Console::new(ui, &dm, true, false),
-            fullimg: FullImage::new(ui, &dm, false, true, full_image),
-            network: net,
+            panels,
+            panel_num,
+            resources,
+            network,
             num_devices: 1};
 
 
@@ -136,15 +157,23 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
     let top_height = 2.0 * window[1] / 3.0;
     let bottom_height = window[1] - top_height - MARGIN;
 
-    interface.fullimg.build(ui,
-        Canvas::new().parent(interface.root_ids.canvas)
-            .wh([width, top_height])
-            .top_right_of(interface.root_ids.canvas));
 
+    // Panel
+    let panel_canvas = Canvas::new().parent(interface.root_ids.canvas)
+    .wh([width, top_height])
+    .top_right_of(interface.root_ids.canvas);
+
+    match interface.panel_num.load(Ordering::Relaxed) {
+        7=> interface.panels.settings_panel.build(ui, panel_canvas),
+        _=> interface.panels.large_image.build(ui, panel_canvas),
+    };
 
     // Console
     interface.console.build(ui, Canvas::new().parent(interface.root_ids.canvas)
         .wh([width, bottom_height])
         .bottom_right_of(interface.root_ids.canvas));
+
+
+
 
 }

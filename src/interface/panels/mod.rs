@@ -7,6 +7,6 @@ use conrod::{UiCell};
 use conrod::widget::Canvas;
 
 
-pub trait Display {
+pub trait Panel {
     fn build(&mut self, ui: &mut UiCell, base_canvas: Canvas);
 }

@@ -14,7 +14,7 @@ use time;
 
 use DECALS_base::data::DataManager;
 
-use super::Display;
+use super::Panel;
 use super::super::components::container::Container;
 
 const MAX_LINES: usize = 30;
@@ -67,7 +67,7 @@ impl Console {
 
 }
 
-impl Display for Console {
+impl Panel for Console {
 
     fn build(&mut self, ui: &mut UiCell, base_canvas: Canvas) {
 
