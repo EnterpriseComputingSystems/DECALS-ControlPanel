@@ -117,7 +117,7 @@ pub fn build_interface(ui: &mut UiCell, interface: &mut InterfaceState) {
         loop {
             match rec.try_recv() {
                 Ok(Event::UnitDiscovered(_))=>interface.num_devices = interface.network.get_num_devices(),
-                Ok(Event::SettingRegistered(key, options))=>interface.panels.settings_panel.update_settings(ui, &interface.network.get_data_manager(), &interface.network.get_common_settings()),
+                Ok(Event::SettingRegistered(_key, _options))=>interface.panels.settings_panel.update_settings(ui, &interface.network.get_data_manager(), &interface.network.get_common_settings()),
                 Err(_)=>break,
                 _=>{}
             }
