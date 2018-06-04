@@ -53,7 +53,7 @@ mod feature {
 
         Network::register_setting(&network, "Rendering".to_string(), vec!["High".to_string(), "Medium".to_string(), "Low".to_string()]);
 
-        Network::register_setting(&network, "Broadcast Freq.".to_string(), vec!["High".to_string(), "Medium".to_string(), "Low".to_string()]);
+        Network::register_setting(&network, "BroadcastFreq.".to_string(), vec!["High".to_string(), "Medium".to_string(), "Low".to_string()]);
 
 
         // Construct the window.
