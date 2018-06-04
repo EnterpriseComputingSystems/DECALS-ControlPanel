@@ -16,7 +16,7 @@ dependencies = [
 [[package]]
 name = "DECALS-base"
 version = "0.1.0"
-source = "git+https://github.com/EnterpriseComputingSystems/DECALS-base#41014d7f608da6f69f72ec1e7a55ec6a48c02e40"
+source = "git+https://github.com/EnterpriseComputingSystems/DECALS-base#126daca1dfd0bbbe6eb23120635bf5220b9833bf"
 dependencies = [
  "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "net2 0.2.32 (registry+https://github.com/rust-lang/crates.io-index)",

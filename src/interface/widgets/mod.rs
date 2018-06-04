@@ -262,7 +262,7 @@ pub mod rounded_button {
     }
 
     const CORNER_RADIANS: Scalar = PI * 0.5;
-    const CORNER_RESOLUTION: usize = 20;
+    const CORNER_RESOLUTION: usize = 10;
 
     /// Produce an iterator yielding the outer points of a rounded rectangle.
     ///
