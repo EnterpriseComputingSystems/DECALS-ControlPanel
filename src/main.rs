@@ -51,6 +51,11 @@ mod feature {
 
         let network: Arc<Network> = Network::new(interests);
 
+        Network::register_setting(&network, "Rendering".to_string(), vec!["High".to_string(), "Medium".to_string(), "Low".to_string()]);
+
+        Network::register_setting(&network, "Broadcast Freq.".to_string(), vec!["High".to_string(), "Medium".to_string(), "Low".to_string()]);
+
+
         // Construct the window.
         let mut window: PistonWindow =
             WindowSettings::new("DECALS", [WIDTH, HEIGHT])

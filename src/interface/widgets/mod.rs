@@ -92,6 +92,16 @@ pub mod rounded_button {
             }
         }
 
+        pub fn rounded_right(radius: Scalar) -> Self {
+            RoundedButton {
+                common: widget::CommonBuilder::default(),
+                style: Style::default(),
+                maybe_label: None,
+                enabled: true,
+                radii: [radius, 0.0, 0.0, radius]
+            }
+        }
+
         /// Specify the font used for displaying the label.
         #[allow(dead_code)]
         pub fn label_font_id(mut self, font_id: conrod::text::font::Id) -> Self {
